@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from androidperf.collectors.activity import class_short_name, parse_resumed_activity
-from androidperf.summary import fmt_bytes_from_kb
 from androidperf.collectors.battery import battery_status_name, parse_battery
 from androidperf.collectors.thermal import parse_thermal, thermal_status_name
+from androidperf.summary import fmt_bytes_from_kb
 
 FIXTURES = Path(__file__).parent / "fixtures"
 

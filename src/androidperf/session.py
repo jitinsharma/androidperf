@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any
 
 from adbutils import AdbDevice
-
 from rich.console import Console
 
 from .collectors import activity, battery, cpu, fps, memory, network, thermal

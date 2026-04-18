@@ -42,8 +42,8 @@ pip install androidperf           # into the current environment
 From source (until the package is on PyPI, or if you want to hack on it):
 
 ```bash
-git clone <repo>
-cd android-performance
+git clone https://github.com/jitinsharma/androidperf.git
+cd androidperf
 
 # Option A — globally available, isolated venv managed by pipx:
 pipx install .
@@ -63,11 +63,12 @@ androidperf devices
 # 2. Find the package you want to profile
 androidperf packages --filter com.android
 
+# 3. Search app and record
+androidperf record
+
 # 3. Launch the app and record for 60s at 1s cadence
 androidperf record --package com.android.settings --interval 1 --duration 60
 
-# 4. (Optional) regenerate the HTML from a prior run
-androidperf report runs/20260418-100000-com_android_settings/samples.json
 ```
 
 If `--package` is omitted, `record` drops into an interactive prompt: type a

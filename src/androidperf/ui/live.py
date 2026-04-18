@@ -165,10 +165,7 @@ class LiveDashboard:
     def _status_row(self) -> Panel:
         # screen
         screen = self._current_screen
-        if screen:
-            screen_text = screen.split("/", 1)[1].lstrip(".") if "/" in screen else screen
-        else:
-            screen_text = "—"
+        screen_text = (screen.split("/", 1)[1].lstrip(".") if "/" in screen else screen) if screen else "—"
 
         # battery
         lvl = self._latest.get("battery_level_pct")
