@@ -1,0 +1,11 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+Display #0 (activities from top to bottom):
+  Task id #123 type=standard
+    * TaskRecord{abc123 #123 A=com.example.app U=0 StackId=1 sz=2}
+      mResumedActivity: ActivityRecord{def456 u0 com.example.app/.HomeActivity t123}
+    Hist #1: ActivityRecord{ghi789 u0 com.example.app/.HomeActivity t123}
+    Hist #0: ActivityRecord{jkl012 u0 com.example.app/.SplashActivity t123}
+
+  mResumedActivity: ActivityRecord{def456 u0 com.example.app/.HomeActivity t123}
+  mFocusedActivity: ActivityRecord{def456 u0 com.example.app/.HomeActivity t123}
+  topResumedActivity=ActivityRecord{def456 u0 com.example.app/.HomeActivity t123}

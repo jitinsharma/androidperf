@@ -1,0 +1,16 @@
+Active interfaces:
+  iface=wlan0 ident=[{type=WIFI, subType=COMBINED, networkId="example"}]
+
+Detailed Stats:
+ident=[{type=WIFI, subType=COMBINED, networkId="example"}] uid=10234 set=ALL tag=0x0 metered=NO defaultNetwork=YES
+  NetworkStatsHistory: bucketDuration=3600000
+    st=1718400000000 rb=3000000 rp=20000 tb=500000 tp=10000 op=0
+    st=1718403600000 rb=2000000 rp=10000 tb=300000 tp=10000 op=0
+
+ident=[{type=WIFI, subType=COMBINED, networkId="example"}] uid=10999 set=ALL tag=0x0 metered=NO defaultNetwork=YES
+  NetworkStatsHistory: bucketDuration=3600000
+    st=1718400000000 rb=99999 rp=99 tb=99999 tp=99 op=0
+
+ident=[{type=WIFI, subType=COMBINED, networkId="example"}] uid=10234 set=ALL tag=0xf0000000 metered=NO defaultNetwork=YES
+  NetworkStatsHistory: bucketDuration=3600000
+    st=1718400000000 rb=1000000 rp=100 tb=100000 tp=100 op=0

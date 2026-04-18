@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>androidperf · {{ meta.package }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                         "Helvetica Neue", Arial, sans-serif;
+            background: #0f1115;
+            color: #e6e9ef;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px 64px;
+        }
+        header {
+            padding-bottom: 24px;
+            border-bottom: 1px solid #1d2230;
+            margin-bottom: 24px;
+        }
+        header h1 {
+            margin: 0 0 4px 0;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        header h1 small {
+            font-weight: 400;
+            color: #8a94a6;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        header .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px 24px;
+            margin-top: 16px;
+        }
+        header .meta-grid div {
+            font-size: 12px;
+        }
+        header .meta-grid label {
+            display: block;
+            color: #6b7689;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        header .meta-grid span { color: #e6e9ef; font-weight: 500; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .stat {
+            background: #141823;
+            border: 1px solid #1d2230;
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+        .stat .k {
+            color: #6b7689;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .stat .v {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .stat .sub {
+            color: #8a94a6;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        section.chart {
+            background: #141823;
+            border: 1px solid #1d2230;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        section.chart h2 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #a3adc2;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        section.timeline {
+            background: #141823;
+            border: 1px solid #1d2230;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        section.timeline h2 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #a3adc2;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .events {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 4px 16px;
+            font-size: 13px;
+        }
+        .events .t { color: #6b7689; font-variant-numeric: tabular-nums; }
+        .events .n { color: #e6e9ef; font-family: "SF Mono", Menlo, monospace; font-size: 12px; }
+        footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #1d2230;
+            color: #6b7689;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>androidperf <small>· {{ meta.package }}</small></h1>
+        <div class="meta-grid">
+            <div><label>Device</label><span>{{ meta.device.manufacturer }} {{ meta.device.model }}</span></div>
+            <div><label>Serial</label><span>{{ meta.device.serial }}</span></div>
+            <div><label>SDK</label><span>{{ meta.device.sdk }}</span></div>
+            <div><label>PID / UID</label><span>{{ meta.pid }} / {{ meta.uid }}</span></div>
+            <div><label>Started</label><span>{{ meta.started_at }}</span></div>
+            <div><label>Ended</label><span>{{ meta.ended_at }}</span></div>
+            <div><label>Interval</label><span>{{ meta.interval_s }}s</span></div>
+            <div><label>Samples</label><span>{{ meta.sample_count }}</span></div>
+        </div>
+    </header>
+
+    <div class="summary">
+        {% for card in summary_cards %}
+        <div class="stat">
+            <div class="k">{{ card.label }}</div>
+            <div class="v">{{ card.value }}</div>
+            {% if card.sub %}<div class="sub">{{ card.sub }}</div>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if events %}
+    <section class="timeline">
+        <h2>Screen timeline</h2>
+        <div class="events">
+        {% for ev in events %}
+            <div class="t">{{ "%.1f"|format(ev.t) }}s</div>
+            <div class="n">{{ ev.short_name or ev.name }}</div>
+        {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% for chart in charts %}
+    <section class="chart">
+        <h2>{{ chart.title }}</h2>
+        {{ chart.html | safe }}
+    </section>
+    {% endfor %}
+
+    <footer>Generated by androidperf</footer>
+</div>
+</body>
+</html>

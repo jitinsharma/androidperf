@@ -1,0 +1,37 @@
+Applications Memory Usage (in Kilobytes):
+Uptime: 123456 Realtime: 234567
+
+** MEMINFO in pid 12345 [com.example.app] **
+                   Pss  Private  Private     Swap      Rss     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty    Total     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------   ------
+  Native Heap    40960    40000        0        0    60000    70000    55000    15000
+  Dalvik Heap    20480    20000        0        0    28000    32000    24000     8000
+ Dalvik Other     2048     2000        0        0     3000
+        Stack      512      500        0        0      700
+       Ashmem      256      200        0        0      400
+    Other dev       64       60        0        0      100
+     .so mmap     8192     1000     4000        0    12000
+    .apk mmap     4096        0     2000        0     6000
+    .ttf mmap      512        0      400        0      800
+    .dex mmap     2048      200     1500        0     3000
+    .oat mmap      256       50      200        0      500
+    .art mmap     1024      900       50        0     1500
+   Other mmap      128      100        0        0      200
+      Unknown      512      400        0        0      800
+
+                      TOTAL PSS:   204800            TOTAL RSS:   300000       TOTAL SWAP (KB):        0
+
+ App Summary
+                       Pss(KB)                        Rss(KB)
+                        ------                         ------
+           Java Heap:    40960                         50000
+         Native Heap:    40960                         60000
+                Code:    14336                         22300
+               Stack:      512                           700
+            Graphics:    20480                         25000
+       Private Other:     2048
+              System:    86504
+             Unknown:                                    800
+
+           TOTAL PSS:   204800            TOTAL RSS:   300000       TOTAL SWAP (KB):        0
