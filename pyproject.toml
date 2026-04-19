@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "androidperf"
-version = "0.1.0"
+version = "0.1.1"
 description = "ADB-based Android performance metric recorder with live TUI and HTML report"
 readme = "README.md"
 requires-python = ">=3.11"

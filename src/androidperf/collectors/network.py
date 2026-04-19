@@ -98,5 +98,10 @@ def sample(device: AdbDevice, *, uid: int, **_: object) -> dict[str, float]:
     parsed = parse_xt_qtaguid(out, uid)
     if parsed is not None:
         return parsed
+    # NetworkStatsService buckets per-UID counters and flushes them on its
+    # own schedule, so a bare `dumpsys netstats detail` returns the same
+    # totals across successive 1 s ticks — deltas are always zero. `--poll`
+    # forces a flush before the read.
+    device.shell("dumpsys netstats --poll")
     out = device.shell(f"dumpsys netstats detail --uid={uid}")
     return parse_netstats(out, uid)

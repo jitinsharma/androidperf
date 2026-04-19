@@ -220,7 +220,7 @@ class LiveDashboard:
         return Panel(body, title="[bold]CPU[/bold]", border_style="green", height=_PANEL_HEIGHT)
 
     def _mem_panel(self) -> Panel:
-        table = Table.grid(expand=True)
+        table = Table.grid(expand=True, padding=(0, 1))
         table.add_column(justify="left")
         table.add_column(justify="right")
         rows = [
@@ -238,7 +238,7 @@ class LiveDashboard:
     def _net_panel(self) -> Panel:
         rx = self._latest.get("rx_b", 0.0)
         tx = self._latest.get("tx_b", 0.0)
-        table = Table.grid(expand=True)
+        table = Table.grid(expand=True, padding=(0, 1))
         table.add_column(justify="left")
         table.add_column(justify="right")
         table.add_row(Text("↓ rx", style="dim"), Text(_fmt_bytes(rx) + "/s", style="bold blue"))
