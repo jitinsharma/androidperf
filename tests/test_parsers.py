@@ -2,6 +2,7 @@ from pathlib import Path
 
 from androidperf.collectors.cpu import parse_top
 from androidperf.collectors.fps import parse_gfxinfo
+from androidperf.collectors.fragments import parse_active_fragment
 from androidperf.collectors.memory import parse_meminfo
 from androidperf.collectors.network import parse_netstats, parse_xt_qtaguid
 
@@ -92,3 +93,19 @@ def test_parse_gfxinfo_partial_output():
     text = "Total frames rendered: 42\n"
     result = parse_gfxinfo(text)
     assert result == {"frames_total": 42}
+
+
+def test_parse_active_fragment_picks_visible_top_and_deepest_child():
+    result = parse_active_fragment(_read("dumpsys_activity.txt"))
+    # Captured while the user was on the Stocks tab with the SIP listing pager
+    # page in focus. Hidden tabs (Credit/Fno/Mf) should be filtered out.
+    assert result is not None
+    top, _, child = result.partition(" / ")
+    assert top == "MainStocksTabFragment"
+    assert child  # nested child present
+
+
+def test_parse_active_fragment_returns_none_for_compose_app():
+    # No "Fragment{...}" entries — typical of a Compose-only app dump.
+    text = "ACTIVITY com.example/.MainActivity\n  mResumed=true\n  ViewRoot:\n"
+    assert parse_active_fragment(text) is None

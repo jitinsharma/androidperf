@@ -1,0 +1,385 @@
+Active Fragments:
+    CreditBaseContainerFragment{3560a98} (ed690402-5469-43e3-ac09-6709ed11dc62 id=0x7f0a0dca tag=CreditBaseContainerFragment)
+        mFragmentId=#7f0a0dca mContainerId=#7f0a0dca mTag=CreditBaseContainerFragment
+        mState=7 mWho=ed690402-5469-43e3-ac09-6709ed11dc62 mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=true mDetached=false mMenuVisible=true mHasMenu=true
+        mRetainInstance=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{e7f663b in a{a06b158}}}
+        mHost=androidx.fragment.app.r$a@a06b158
+        mPopDirection=false
+        mContainer=android.widget.FrameLayout{cff0031 V.E...... ......I. 0,158-1080,2154 #7f0a0dca app:id/frameFragContainer}
+        mView=androidx.constraintlayout.widget.ConstraintLayout{dd77840 G.E...... ........ 0,0-1080,1838}
+        Child FragmentManager{f282b1 in CreditBaseContainerFragment{3560a98}}}:
+          Active Fragments:
+          CreditMultipleProductsFragment{29cd1c6} (aa6e0179-80ee-451a-83fc-3d60741b4736 id=0x7f0a0782)
+              mFragmentId=#7f0a0782 mContainerId=#7f0a0782 mTag=null
+              mState=7 mWho=aa6e0179-80ee-451a-83fc-3d60741b4736 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=true mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{f282b1 in CreditBaseContainerFragment{3560a98}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=CreditBaseContainerFragment{3560a98} (ed690402-5469-43e3-ac09-6709ed11dc62 id=0x7f0a0dca tag=CreditBaseContainerFragment)
+              mArguments=Bundle[{arg_screen_arguments=CreditTeleportResponseData(productType=[PL, LAMF], product=CreditProduct(pl=PLProduct(offerType=RPL, vendorCode=PFL_NBFC, pa=null, rpl=StaticOfferData(type=PRODUCT_PAGE, data=StaticProductPage(staticProductPageData=StaticProductPageData(showLimit=true, maxLimit=15,00,000, vendorCode=PFL_NBFC, productCode=PFL_PRIME_002, uspData=UspData(mainText=Instant hassle free money, subText=Finance your dreams with flexible EMI plans, usp=[UspItem(text=No paperwork required, image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/no_paperwork_new_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/no_paperwork_new_light.webp)]), UspItem(text=Disbursal in 10 minutes, image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/disbursal_new_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/disbursal_new_light.webp)]), UspItem(text=No hidden charges, image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/no_hidden_charge_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/no_hidden_charge_light.webp)])])), buttonConfigData=ButtonConfigData(secondaryButtonConfig=null, primaryButtonConfig=ButtonDetail(text=Check your loan limit, appNotInstalledText=Check your loan limit, appInstalledText=Check your loan limit, type=DEEPLINK, showIcon=false, appInstalledDeeplink=https://groww-credit.onelink.me/pmPW, appNotInstalledDeeplink=https://groww-credit.onelink.me/pmPW, webAutoLoginUrl=null, data=null, ctaActionType=DEEPLINK, ctaActionData=CtaActionData(apiCallData=null, deeplinkData=DeeplinkData(deepLink=https://groww-credit.onelink.me/pmPW), bottomSheetData=null, screenData=null, webAutoLoginUrl=null))), faq=FAQ(mainText=How it works, itemList=[FAQItem(image=mds_ic_rupee, text=Check your approved Loan amount), FAQItem(image=mds_ic_price_outline, text=Choose your loan amount and EMI), FAQItem(image=mds_ic_account_circle_outline, text=Setup AutoPay and complete KYC), FAQItem(image=mds_ic_bills_outline, text=Seamless EMI auto-repayments)]))), noOffer=null, deeplink=null, cardDetails=CardDetails(mainText=Personal loan, subText=Hassle-free money in your bank account, maxLimit=₹15,00,000, limitText=Available upto, ctaAction=PRODUCT_PAGE, image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/pl_card_image_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/pl_card_image_light.webp)])), lamf=LAMFProduct(cardDetails=CardDetails(mainText=Loan against Mutual Funds, subText=@10.5% p.a., maxLimit=₹ 15Cr, limitText=Available loan limit, ctaAction=PRODUCT_PAGE, image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/lamf_home_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/lamf_home_light.webp)]), lamfProductDetails=ProductDetails(referenceId=, lenderId=GCS, title=Loan against Mutual Funds, limitText=LOAN UP TO @ 10.5 %p.a., maxLimit=1.5E8, limitBar=null, usp=Usp(title=Money against your funds, subTitle=Use your Mutual Fund holdings to unlock a flexible Credit line in minutes, tag=As low as @10.5% p.a., usps=[LamfUspItem(text=No charges till you borrow, darkImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/get_line_dark.webp, lightImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/get_line_light.webp), LamfUspItem(text=Pay interest for what you use, darkImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/pay_for_use_dark.webp, lightImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/pay_for_use_light.webp), LamfUspItem(text=Grow your funds with market, darkImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/groww_funds_peace_dark.webp, lightImageUrl=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/groww_funds_peace_light.webp)]), faq=FAQ(mainText=How it works, itemList=[FAQItem(image=mds_ic_store, text=Fetch your MFs to select your loan limit), FAQItem(image=mds_ic_price_outline, text=Complete KYC and pledge MFs as security), FAQItem(image=mds_ic_account_circle_outline, text=Withdraw any amount, up to limit), FAQItem(image=mds_ic_bills_outline, text=Pay interest on what's due, repay anytime)]), whatHappens=WhatHappens(mainText=What happens to your funds?, itemList=[WhatHappensItem(image=mds_ic_check, text=SIPs remain active), WhatHappensItem(image=mds_ic_trending_line_chart, text=MFs keep growing), WhatHappensItem(image=mds_ic_block_stop, text=No selling of MFs), WhatHappensItem(image=mds_ic_lock_open, text=Repay to unpledge)]), cta=Cta(text=Withdraw now, errorMessage=null, deepLink=), minLineAmount=50000.0, eligibleHoldings=null, ineligibleHoldings=null, nextStep=SHOW_DOWNLOAD_BOTTOM_SHEET, buttonConfig=ButtonDetail(text=Download Groww Credit, appNotInstalledText=Download Groww Credit, appInstalledText=Open Groww Credit, type=DEEPLINK, showIcon=true, appInstalledDeeplink=https://groww-credit.onelink.me/pmPW/jaj36iir, appNotInstalledDeeplink=https://groww-credit.onelink.me/pmPW/ssl5xaei, webAutoLoginUrl=null, data=DownloadGCBottomSheetContent(cardDetails=MessageBoardCardContent(mainText=Loan on MFs, subText=You are just few steps away..., maxLimit= upto ₹15Cr, ctaText= ROI starting @10.49% , image=[CardImage(mode=DARK, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/groww_credit_app_icon_dark.webp), CardImage(mode=LIGHT, url=https://storage.googleapis.com/groww-static-content/app-assets/banking/groww/teleport/groww_credit_app_icon_light.webp)]), mainText=Continue application for instant disbursal, subText=No paperwork • Instant disbursal, ctaText=Withdraw now), ctaActionType=DEEPLINK, ctaActionData=CtaActionData(apiCallData=null, deeplinkData=DeeplinkData(deepLink=https://groww-credit.onelink.me/pmPW/jaj36iir), bottomSheetData=null, screenData=null, webAutoLoginUrl=null)), showGitConsentScreen=true, summaryStatus=null), deeplink=groww://lamf_deeplink), default=null, teleportOldData=null))}]
+              mPopDirection=false
+              mContainer=android.widget.FrameLayout{ce1e379 V.E...... ........ 0,0-1080,1838 #7f0a0782 app:id/child_fragment_container}
+              mView=androidx.constraintlayout.widget.ConstraintLayout{b4e04e V.E...... ........ 0,0-1080,1838}
+              Child FragmentManager{f9c396 in CreditMultipleProductsFragment{29cd1c6}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@ff42b17
+                  mParent=CreditMultipleProductsFragment{29cd1c6} (aa6e0179-80ee-451a-83fc-3d60741b4736 id=0x7f0a0782)
+                  mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+          Added Fragments:
+            #0: CreditMultipleProductsFragment{29cd1c6} (aa6e0179-80ee-451a-83fc-3d60741b4736 id=0x7f0a0782)
+          Back Stack Index: 0
+          FragmentManager misc state:
+            mHost=androidx.fragment.app.r$a@a06b158
+            mContainer=androidx.fragment.app.Fragment$f@ae18b04
+            mParent=CreditBaseContainerFragment{3560a98} (ed690402-5469-43e3-ac09-6709ed11dc62 id=0x7f0a0dca tag=CreditBaseContainerFragment)
+            mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+    MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+        mFragmentId=#7f0a0dca mContainerId=#7f0a0dca mTag=MainStocksTabFragment
+        mState=7 mWho=a389ade9-c18c-4157-810d-0ab4fdf4db22 mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=true mHasMenu=true
+        mRetainInstance=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{e7f663b in a{a06b158}}}
+        mHost=androidx.fragment.app.r$a@a06b158
+        mPopDirection=false
+        mContainer=android.widget.FrameLayout{cff0031 V.E...... ......I. 0,158-1080,2154 #7f0a0dca app:id/frameFragContainer}
+        mView=android.widget.RelativeLayout{fff6cb6 V.E...... ......I. 0,0-1080,1996 #7f0a08b4 app:id/container}
+        Child FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}:
+          Active Fragments:
+          StocksDashboardOrdersFragment{d711b74} (63485638-e274-46a0-b3ae-27c7e46f692b tag=f-1540817713)
+              mFragmentId=#0 mContainerId=#0 mTag=f-1540817713
+              mState=5 mWho=63485638-e274-46a0-b3ae-27c7e46f692b mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+              mPopDirection=false
+              mView=com.nextbillion.groww.investcommons.ui.ThrottledSwipeToRefresh{26a89ae V.ED..... ........ 0,0-1080,1870 #7f0a2633 app:id/swiperefresh}
+              Child FragmentManager{8868322 in StocksDashboardOrdersFragment{d711b74}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@b8661b3
+                  mParent=StocksDashboardOrdersFragment{d711b74} (63485638-e274-46a0-b3ae-27c7e46f692b tag=f-1540817713)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          StocksSipListingFragment{6be19cd} (2ec69523-5921-4d3c-b808-212976f8e139 tag=f7636203)
+              mFragmentId=#0 mContainerId=#0 mTag=f7636203
+              mState=7 mWho=2ec69523-5921-4d3c-b808-212976f8e139 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=true mHasMenu=false
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{cd1d308 V.E...... ........ 0,0-1080,1870}
+              Child FragmentManager{d6e5370 in StocksSipListingFragment{6be19cd}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@e05d6e9
+                  mParent=StocksSipListingFragment{6be19cd} (2ec69523-5921-4d3c-b808-212976f8e139 tag=f7636203)
+                  mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+          StocksDashboardHoldingsFragmentV3{c35e59f} (4fafab69-a8b0-42ee-a9a3-b330669f2e6c tag=f84535888)
+              mFragmentId=#0 mContainerId=#0 mTag=f84535888
+              mState=5 mWho=4fafab69-a8b0-42ee-a9a3-b330669f2e6c mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{19cb298 V.E...... ......ID 0,0-1080,1870}
+              Child FragmentManager{12daf6e in StocksDashboardHoldingsFragmentV3{c35e59f}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@8fb660f
+                  mParent=StocksDashboardHoldingsFragmentV3{c35e59f} (4fafab69-a8b0-42ee-a9a3-b330669f2e6c tag=f84535888)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          StocksDashboardPositionFragmentV2{5f40d02} (073e6260-d033-428d-a166-9596515b4d28 tag=f1145295293)
+              mFragmentId=#0 mContainerId=#0 mTag=f1145295293
+              mState=5 mWho=073e6260-d033-428d-a166-9596515b4d28 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{4bd677a V.E...... ......ID 0,0-1080,1870}
+              Child FragmentManager{abd369c in StocksDashboardPositionFragmentV2{5f40d02}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@1dbf8a5
+                  mParent=StocksDashboardPositionFragmentV2{5f40d02} (073e6260-d033-428d-a166-9596515b4d28 tag=f1145295293)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          MultiWatchlistV2Fragment{cfeac82} (a58fabbe-dd31-40a1-bd49-dd7c6c9aad7d tag=f1511315048)
+              mFragmentId=#0 mContainerId=#0 mTag=f1511315048
+              mState=5 mWho=a58fabbe-dd31-40a1-bd49-dd7c6c9aad7d mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{37b98ed in MainStocksTabFragment{3a8b4d8}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{c16281 V.E...... ........ 0,0-1080,1870}
+              Child FragmentManager{509547a in MultiWatchlistV2Fragment{cfeac82}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@d12542b
+                  mParent=MultiWatchlistV2Fragment{cfeac82} (a58fabbe-dd31-40a1-bd49-dd7c6c9aad7d tag=f1511315048)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          Added Fragments:
+            #0: StocksDashboardHoldingsFragmentV3{c35e59f} (4fafab69-a8b0-42ee-a9a3-b330669f2e6c tag=f84535888)
+            #1: StocksDashboardPositionFragmentV2{5f40d02} (073e6260-d033-428d-a166-9596515b4d28 tag=f1145295293)
+            #2: StocksDashboardOrdersFragment{d711b74} (63485638-e274-46a0-b3ae-27c7e46f692b tag=f-1540817713)
+            #3: StocksSipListingFragment{6be19cd} (2ec69523-5921-4d3c-b808-212976f8e139 tag=f7636203)
+            #4: MultiWatchlistV2Fragment{cfeac82} (a58fabbe-dd31-40a1-bd49-dd7c6c9aad7d tag=f1511315048)
+          Back Stack Index: 0
+          FragmentManager misc state:
+            mHost=androidx.fragment.app.r$a@a06b158
+            mContainer=androidx.fragment.app.Fragment$f@ab52088
+            mParent=MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+            mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+    MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+        mFragmentId=#7f0a0dca mContainerId=#7f0a0dca mTag=MainFnoTabFragment
+        mState=7 mWho=23cdc243-e696-438a-ac48-3478a6f10cbf mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=true mDetached=false mMenuVisible=true mHasMenu=true
+        mRetainInstance=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{e7f663b in a{a06b158}}}
+        mHost=androidx.fragment.app.r$a@a06b158
+        mArguments=Bundle[{frag_to_launch=Explore}]
+        mPopDirection=false
+        mContainer=android.widget.FrameLayout{cff0031 V.E...... ......I. 0,158-1080,2154 #7f0a0dca app:id/frameFragContainer}
+        mView=androidx.constraintlayout.widget.ConstraintLayout{495b126 G.E...... .......D 0,0-1080,1996}
+        Child FragmentManager{387a21 in MainFnoTabFragment{d92c64a}}}:
+          Active Fragments:
+          FnoOrderTabFragment{3c83e46} (950c9688-e859-414f-b56d-8ac13d62dab9 tag=f-1540817713)
+              mFragmentId=#0 mContainerId=#0 mTag=f-1540817713
+              mState=5 mWho=950c9688-e859-414f-b56d-8ac13d62dab9 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{387a21 in MainFnoTabFragment{d92c64a}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+              mArguments=Bundle[{order_tab_source=FNO_ORDER_TAB}]
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{1d527f6 V.E...... ......ID 0,0-1080,1870}
+              Child FragmentManager{f600807 in FnoOrderTabFragment{3c83e46}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@abfbd34
+                  mParent=FnoOrderTabFragment{3c83e46} (950c9688-e859-414f-b56d-8ac13d62dab9 tag=f-1540817713)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          ManageWatchListFragment{c19dc20} (a9875f72-d31a-416f-a69d-9c0b426a5d4b tag=f-1063239323)
+              mFragmentId=#0 mContainerId=#0 mTag=f-1063239323
+              mState=5 mWho=a9875f72-d31a-416f-a69d-9c0b426a5d4b mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{387a21 in MainFnoTabFragment{d92c64a}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+              mArguments=Bundle[{watch_list_mode=FNO}]
+              mPopDirection=false
+              mView=androidx.swiperefreshlayout.widget.SwipeRefreshLayout{3b055eb V.ED..... ......ID 0,0-1080,1870 #7f0a262c app:id/swipeToRefresh}
+              Child FragmentManager{981975d in ManageWatchListFragment{c19dc20}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@739f8d2
+                  mParent=ManageWatchListFragment{c19dc20} (a9875f72-d31a-416f-a69d-9c0b426a5d4b tag=f-1063239323)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          FnoExploreTabFragment{f36a5c5} (e916ef70-c41d-40f9-b38e-6e13fc428f09 tag=f119843673)
+              mFragmentId=#0 mContainerId=#0 mTag=f119843673
+              mState=7 mWho=e916ef70-c41d-40f9-b38e-6e13fc428f09 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=true mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{387a21 in MainFnoTabFragment{d92c64a}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+              mPopDirection=false
+              mView=androidx.swiperefreshlayout.widget.SwipeRefreshLayout{4347ee6 V.ED..... ......ID 0,0-1080,1870 #7f0a262c app:id/swipeToRefresh}
+              Child FragmentManager{1eb1da3 in FnoExploreTabFragment{f36a5c5}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@33578a0
+                  mParent=FnoExploreTabFragment{f36a5c5} (e916ef70-c41d-40f9-b38e-6e13fc428f09 tag=f119843673)
+                  mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+          FnoPositionFragment{6be6904} (5bed928b-b826-4212-8dbe-461804825aef tag=f1145295293)
+              mFragmentId=#0 mContainerId=#0 mTag=f1145295293
+              mState=5 mWho=5bed928b-b826-4212-8dbe-461804825aef mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{387a21 in MainFnoTabFragment{d92c64a}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{8b6dbcc V.E...... ........ 0,0-1080,1870}
+              Child FragmentManager{4454c59 in FnoPositionFragment{6be6904}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@49ad01e
+                  mParent=FnoPositionFragment{6be6904} (5bed928b-b826-4212-8dbe-461804825aef tag=f1145295293)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          Added Fragments:
+            #0: FnoExploreTabFragment{f36a5c5} (e916ef70-c41d-40f9-b38e-6e13fc428f09 tag=f119843673)
+            #1: FnoPositionFragment{6be6904} (5bed928b-b826-4212-8dbe-461804825aef tag=f1145295293)
+            #2: FnoOrderTabFragment{3c83e46} (950c9688-e859-414f-b56d-8ac13d62dab9 tag=f-1540817713)
+            #3: ManageWatchListFragment{c19dc20} (a9875f72-d31a-416f-a69d-9c0b426a5d4b tag=f-1063239323)
+          Back Stack Index: 0
+          FragmentManager misc state:
+            mHost=androidx.fragment.app.r$a@a06b158
+            mContainer=androidx.fragment.app.Fragment$f@687f0ff
+            mParent=MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+            mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+    MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+        mFragmentId=#7f0a0dca mContainerId=#7f0a0dca mTag=MainMfTabFragment
+        mState=7 mWho=bae8cc81-2031-4b60-85ee-7890bda50f5f mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=true mDetached=false mMenuVisible=true mHasMenu=true
+        mRetainInstance=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{e7f663b in a{a06b158}}}
+        mHost=androidx.fragment.app.r$a@a06b158
+        mPopDirection=false
+        mContainer=android.widget.FrameLayout{cff0031 V.E...... ......I. 0,158-1080,2154 #7f0a0dca app:id/frameFragContainer}
+        mView=androidx.constraintlayout.widget.ConstraintLayout{4ad91ba G.E...... ........ 0,0-1080,1996}
+        Child FragmentManager{7897ecc in MainMfTabFragment{4d618ab}}}:
+          Active Fragments:
+          MfWatchlistTabFragment{a003b50} (2fcaa9b8-a1ff-4cfa-bcfe-4fe24c070fb8 tag=f-344223353)
+              mFragmentId=#0 mContainerId=#0 mTag=f-344223353
+              mState=5 mWho=2fcaa9b8-a1ff-4cfa-bcfe-4fe24c070fb8 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{7897ecc in MainMfTabFragment{4d618ab}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+              mPopDirection=false
+              mView=androidx.swiperefreshlayout.widget.SwipeRefreshLayout{7d84c43 V.ED..... ......ID 0,0-1080,1870 #7f0a2633 app:id/swiperefresh}
+              Child FragmentManager{7f55515 in MfWatchlistTabFragment{a003b50}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@69fd02a
+                  mParent=MfWatchlistTabFragment{a003b50} (2fcaa9b8-a1ff-4cfa-bcfe-4fe24c070fb8 tag=f-344223353)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          MfSipTabFragment{5a396f} (43ef7183-05fd-47a2-b36e-d061d3299b60 tag=f5204684)
+              mFragmentId=#0 mContainerId=#0 mTag=f5204684
+              mState=5 mWho=43ef7183-05fd-47a2-b36e-d061d3299b60 mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{7897ecc in MainMfTabFragment{4d618ab}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+              mPopDirection=false
+              mView=androidx.constraintlayout.widget.ConstraintLayout{55ca683 V.E...... ......ID 0,0-1080,1870}
+              Child FragmentManager{df49e1b in MfSipTabFragment{5a396f}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@d35bbb8
+                  mParent=MfSipTabFragment{5a396f} (43ef7183-05fd-47a2-b36e-d061d3299b60 tag=f5204684)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          MfDashboardTabFragment{167a263} (3b20652e-edd1-433b-b716-2c05e18d0ede tag=f-1979591865)
+              mFragmentId=#0 mContainerId=#0 mTag=f-1979591865
+              mState=5 mWho=3b20652e-edd1-433b-b716-2c05e18d0ede mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=false mHasMenu=false
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{7897ecc in MainMfTabFragment{4d618ab}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+              mPopDirection=false
+              mView=androidx.swiperefreshlayout.widget.SwipeRefreshLayout{b214e62 V.ED..... ........ 0,0-1080,1870 #7f0a262c app:id/swipeToRefresh}
+              Child FragmentManager{7632d91 in MfDashboardTabFragment{167a263}}}:
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@c42c4f6
+                  mParent=MfDashboardTabFragment{167a263} (3b20652e-edd1-433b-b716-2c05e18d0ede tag=f-1979591865)
+                  mCurState=5 mStateSaved=false mStopped=false mDestroyed=false
+          MfExploreFragment{82dd434} (99032151-fc0b-4e03-ba46-9892a65f40fb tag=f-1544809607)
+              mFragmentId=#0 mContainerId=#0 mTag=f-1544809607
+              mState=7 mWho=99032151-fc0b-4e03-ba46-9892a65f40fb mBackStackNesting=0
+              mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+              mHidden=false mDetached=false mMenuVisible=true mHasMenu=true
+              mRetainInstance=false mUserVisibleHint=true
+              mFragmentManager=FragmentManager{7897ecc in MainMfTabFragment{4d618ab}}}
+              mHost=androidx.fragment.app.r$a@a06b158
+              mParentFragment=MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+              mPopDirection=false
+              mView=android.widget.FrameLayout{4d9e4b3 V.E...... ........ 0,0-1080,1870}
+              Child FragmentManager{cb500f7 in MfExploreFragment{82dd434}}}:
+                Active Fragments:
+                MessageBoardFragment{112878b} (a89bf357-e1fe-4125-8120-23c33175fccc id=0x7f0a1a25)
+                    mFragmentId=#7f0a1a25 mContainerId=#7f0a1a25 mTag=null
+                    mState=7 mWho=a89bf357-e1fe-4125-8120-23c33175fccc mBackStackNesting=0
+                    mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+                    mHidden=false mDetached=false mMenuVisible=true mHasMenu=true
+                    mRetainInstance=false mUserVisibleHint=true
+                    mFragmentManager=FragmentManager{cb500f7 in MfExploreFragment{82dd434}}}
+                    mHost=androidx.fragment.app.r$a@a06b158
+                    mParentFragment=MfExploreFragment{82dd434} (99032151-fc0b-4e03-ba46-9892a65f40fb tag=f-1544809607)
+                    mArguments=Bundle[{MESSAGE_BOARD_ARGS=MessageBoardArgs(source=MF, type=LOCAL, priority=null)}]
+                    mPopDirection=false
+                    mContainer=android.widget.FrameLayout{ab24068 V.E...... ........ 0,0-1080,0 #7f0a1a25 app:id/messageboardContainer}
+                    mView=android.widget.LinearLayout{e057e17 V.E...... ......ID 0,0-1080,0}
+                    Child FragmentManager{566db64 in MessageBoardFragment{112878b}}}:
+                      Back Stack Index: 0
+                      FragmentManager misc state:
+                        mHost=androidx.fragment.app.r$a@a06b158
+                        mContainer=androidx.fragment.app.Fragment$f@6fc11cd
+                        mParent=MessageBoardFragment{112878b} (a89bf357-e1fe-4125-8120-23c33175fccc id=0x7f0a1a25)
+                        mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+                Added Fragments:
+                  #0: MessageBoardFragment{112878b} (a89bf357-e1fe-4125-8120-23c33175fccc id=0x7f0a1a25)
+                Back Stack Index: 0
+                FragmentManager misc state:
+                  mHost=androidx.fragment.app.r$a@a06b158
+                  mContainer=androidx.fragment.app.Fragment$f@84e3a82
+                  mParent=MfExploreFragment{82dd434} (99032151-fc0b-4e03-ba46-9892a65f40fb tag=f-1544809607)
+                  mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+          Added Fragments:
+            #0: MfExploreFragment{82dd434} (99032151-fc0b-4e03-ba46-9892a65f40fb tag=f-1544809607)
+            #1: MfDashboardTabFragment{167a263} (3b20652e-edd1-433b-b716-2c05e18d0ede tag=f-1979591865)
+            #2: MfSipTabFragment{5a396f} (43ef7183-05fd-47a2-b36e-d061d3299b60 tag=f5204684)
+            #3: MfWatchlistTabFragment{a003b50} (2fcaa9b8-a1ff-4cfa-bcfe-4fe24c070fb8 tag=f-344223353)
+          Back Stack Index: 0
+          FragmentManager misc state:
+            mHost=androidx.fragment.app.r$a@a06b158
+            mContainer=androidx.fragment.app.Fragment$f@1aeb593
+            mParent=MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+            mCurState=7 mStateSaved=false mStopped=false mDestroyed=false
+    Added Fragments:
+      #0: MainStocksTabFragment{3a8b4d8} (a389ade9-c18c-4157-810d-0ab4fdf4db22 id=0x7f0a0dca tag=MainStocksTabFragment)
+      #1: MainFnoTabFragment{d92c64a} (23cdc243-e696-438a-ac48-3478a6f10cbf id=0x7f0a0dca tag=MainFnoTabFragment)
+      #2: MainMfTabFragment{4d618ab} (bae8cc81-2031-4b60-85ee-7890bda50f5f id=0x7f0a0dca tag=MainMfTabFragment)
+      #3: CreditBaseContainerFragment{3560a98} (ed690402-5469-43e3-ac09-6709ed11dc62 id=0x7f0a0dca tag=CreditBaseContainerFragment)
+    Back Stack Index: 0
+    FragmentManager misc state:
+      mHost=androidx.fragment.app.r$a@a06b158
+      mContainer=androidx.fragment.app.r$a@a06b158
+      mCurState=7 mStateSaved=false mStopped=false mDestroyed=false

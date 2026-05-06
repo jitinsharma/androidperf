@@ -7,6 +7,7 @@ external network calls needed to view the report.
 from __future__ import annotations
 
 import json
+from hashlib import md5
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,18 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from ..collectors.activity import class_short_name
 from ..summary import build_cards
+
+# Curated dark-theme-friendly palette. Names get assigned colors by stable
+# hash so the same fragment always renders the same color across runs.
+_PALETTE = [
+    "#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa",
+    "#fb923c", "#22d3ee", "#84cc16", "#f87171", "#c084fc",
+]
+
+
+def _color_for(name: str) -> str:
+    h = int(md5(name.encode("utf-8")).hexdigest()[:8], 16)
+    return _PALETTE[h % len(_PALETTE)]
 
 _TEMPLATE_DIR = Path(__file__).parent
 _TEMPLATE_NAME = "template.html.j2"
@@ -27,9 +40,10 @@ def _layout(yaxis_title: str) -> dict[str, Any]:
         "paper_bgcolor": "#141823",
         "plot_bgcolor": "#141823",
         "font": {"family": "-apple-system, Segoe UI, Roboto, sans-serif", "size": 12, "color": "#e6e9ef"},
-        # Top margin holds up to 3 stacked rows of event labels; bottom
-        # margin holds the x-axis title + horizontal legend below plot.
-        "margin": {"l": 50, "r": 20, "t": 80, "b": 90},
+        # Bottom margin holds the x-axis title + horizontal legend below
+        # the plot. Screen-context now lives in the top-of-page swim-lane
+        # and the unified hover, so we no longer reserve top space for it.
+        "margin": {"l": 50, "r": 20, "t": 30, "b": 90},
         "height": 360,
         "hovermode": "x unified",
         "xaxis": {"title": "elapsed (s)", "gridcolor": "#1d2230"},
@@ -39,86 +53,111 @@ def _layout(yaxis_title: str) -> dict[str, Any]:
     }
 
 
-_MAX_LABEL_ROWS = 3
-_ROW_Y_BASE = 1.05
-_ROW_Y_STEP = 0.08
+def _segments(events: list[dict[str, Any]], kind: str, end_t: float) -> list[dict[str, Any]]:
+    """Turn point-in-time events into [start, end, name] segments.
 
-
-def _label_for(ev: dict[str, Any]) -> str:
-    """Prefer an already-short label; otherwise derive it from the full name.
-
-    Re-deriving means older samples.json files (with long dotted short_names)
-    still render cleanly when re-rendered via `androidperf report`.
+    Each event becomes a segment that starts at its `t` and ends when the
+    next same-kind event begins (or `end_t` for the last one).
     """
-    raw = ev.get("short_name") or ev.get("name", "")
-    return class_short_name(raw) if raw else ""
-
-
-def _pack_rows(events: list[dict[str, Any]], duration: float) -> list[tuple[dict[str, Any], int]]:
-    """Assign each event a row index so labels don't horizontally overlap.
-
-    Uses a rough 'per-character x-extent' heuristic — we don't know the
-    plot's pixel width at render time, so duration scales the gap. Events
-    that can't fit in the first `_MAX_LABEL_ROWS` pile onto the last row.
-    """
-    per_char_x = max(duration * 0.012, 0.4) if duration > 0 else 1.0
-    rows_right: list[float] = []
-    placed: list[tuple[dict[str, Any], int]] = []
-    for ev in events:
-        if ev.get("type") != "screen" or ev.get("t") is None:
+    filtered = [e for e in events if e.get("type") == kind and e.get("t") is not None]
+    filtered.sort(key=lambda e: float(e["t"]))
+    segs: list[dict[str, Any]] = []
+    for i, ev in enumerate(filtered):
+        start = float(ev["t"])
+        end = float(filtered[i + 1]["t"]) if i + 1 < len(filtered) else end_t
+        if end <= start:
             continue
-        t = float(ev["t"])
-        extent = t + len(_label_for(ev)) * per_char_x
-        row: int | None = None
-        for i, right in enumerate(rows_right):
-            if t > right:
-                row = i
-                break
-        if row is None:
-            if len(rows_right) < _MAX_LABEL_ROWS:
-                row = len(rows_right)
-                rows_right.append(extent)
-            else:
-                row = _MAX_LABEL_ROWS - 1
-                rows_right[row] = extent
-        else:
-            rows_right[row] = extent
-        placed.append((ev, row))
-    return placed
+        full = ev.get("name", "")
+        short = ev.get("short_name") or class_short_name(full) or full
+        segs.append({"start": start, "end": end, "name": full, "short": short})
+    return segs
 
 
-def _apply_event_shapes(fig: go.Figure, events: list[dict[str, Any]], duration: float) -> None:
-    """Draw a vertical dashed line + (row-stacked) label for each screen event."""
-    if not events:
+def _series_for_samples(df: pd.DataFrame, segments: list[dict[str, Any]]) -> list[str]:
+    """For each sample timestamp in `df`, find the segment that contains it."""
+    if not segments or "t" not in df.columns:
+        return ["—"] * len(df)
+    out: list[str] = []
+    for t in df["t"].fillna(0.0):
+        match = next((s["short"] for s in segments if s["start"] <= t < s["end"]), "—")
+        out.append(match)
+    return out
+
+
+def _timeline_figure(events: list[dict[str, Any]], duration: float) -> go.Figure | None:
+    """Compact swim-lane: activity row on top, fragment row below, colored by
+    name. Same x-axis scale as the metric charts so transitions line up."""
+    activity_segs = _segments(events, "screen", duration)
+    fragment_segs = _segments(events, "fragment", duration)
+    if not activity_segs and not fragment_segs:
+        return None
+
+    fig = go.Figure()
+    rows = []
+    if activity_segs:
+        rows.append(("Activity", activity_segs))
+    if fragment_segs:
+        rows.append(("Fragment", fragment_segs))
+
+    for label, segs in rows:
+        for seg in segs:
+            fig.add_trace(go.Bar(
+                x=[seg["end"] - seg["start"]],
+                y=[label],
+                base=[seg["start"]],
+                orientation="h",
+                marker={"color": _color_for(seg["short"]), "line": {"width": 0}},
+                hovertemplate=(
+                    f"<b>{seg['short']}</b><br>"
+                    f"{seg['name']}<br>"
+                    f"{seg['start']:.1f}s → {seg['end']:.1f}s"
+                    "<extra></extra>"
+                ),
+                text=seg["short"],
+                textposition="inside",
+                insidetextanchor="start",
+                textfont={"size": 11, "color": "#0b0d12"},
+                showlegend=False,
+                cliponaxis=False,
+            ))
+
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#141823",
+        plot_bgcolor="#141823",
+        font={"family": "-apple-system, Segoe UI, Roboto, sans-serif", "size": 12, "color": "#e6e9ef"},
+        margin={"l": 80, "r": 20, "t": 20, "b": 40},
+        height=120 if len(rows) == 2 else 90,
+        barmode="overlay",
+        bargap=0.4,
+        xaxis={"title": "elapsed (s)", "gridcolor": "#1d2230", "range": [0, duration]},
+        yaxis={"gridcolor": "#1d2230", "categoryorder": "array", "categoryarray": [r[0] for r in rows][::-1]},
+        showlegend=False,
+        hovermode="closest",
+    )
+    return fig
+
+
+def _add_context_hover(fig: go.Figure, df: pd.DataFrame, events: list[dict[str, Any]], duration: float) -> None:
+    """Add an invisible trace whose tooltip carries activity + fragment so
+    `hovermode='x unified'` shows the screen context next to metric values."""
+    if "t" not in df.columns or df.empty:
         return
-    shapes = []
-    annotations = []
-    for ev, row in _pack_rows(events, duration):
-        t = ev["t"]
-        shapes.append({
-            "type": "line",
-            "xref": "x",
-            "yref": "paper",
-            "x0": t,
-            "x1": t,
-            "y0": 0,
-            "y1": 1,
-            "line": {"color": "#8a94a6", "width": 1, "dash": "dot"},
-        })
-        annotations.append({
-            "x": t,
-            "y": _ROW_Y_BASE + row * _ROW_Y_STEP,
-            "xref": "x",
-            "yref": "paper",
-            "text": _label_for(ev),
-            "showarrow": False,
-            "font": {"size": 11, "color": "#a3adc2"},
-            "xanchor": "left",
-            "yanchor": "middle",
-            "hovertext": ev.get("name", ""),
-        })
-    if shapes:
-        fig.update_layout(shapes=shapes, annotations=annotations)
+    activity = _series_for_samples(df, _segments(events, "screen", duration))
+    fragment = _series_for_samples(df, _segments(events, "fragment", duration))
+    # Plotly drops traces with all-None y values from unified hover, so we
+    # plant the trace at y=0 with a fully transparent line. It still doesn't
+    # render visually but it shows up in the x-unified tooltip.
+    fig.add_trace(go.Scatter(
+        x=df["t"],
+        y=[0] * len(df),
+        mode="lines",
+        line={"color": "rgba(0,0,0,0)", "width": 0},
+        customdata=list(zip(activity, fragment, strict=False)),
+        name="screen",
+        hovertemplate="activity: %{customdata[0]}<br>fragment: %{customdata[1]}<extra></extra>",
+        showlegend=False,
+    ))
 
 
 def _cpu_figure(df: pd.DataFrame) -> go.Figure:
@@ -163,9 +202,13 @@ def _network_figure(df: pd.DataFrame) -> go.Figure:
 
 def _fps_figure(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
+    # Android UI rendering is demand-driven: the app submits frames only when
+    # something changes on screen (animation tick, scroll, invalidation). This
+    # trace is "frames submitted per second per tick" — useful as activity
+    # context for the jank trace, not as a smoothness metric on its own.
     if "fps" in df.columns:
         fig.add_trace(go.Scatter(
-            x=df["t"], y=df["fps"], name="FPS",
+            x=df["t"], y=df["fps"], name="Frames/sec",
             mode="lines", line={"color": "#fcd34d", "width": 2},
         ))
     if "jank_pct" in df.columns:
@@ -173,7 +216,7 @@ def _fps_figure(df: pd.DataFrame) -> go.Figure:
             x=df["t"], y=df["jank_pct"], name="Jank %",
             mode="lines", yaxis="y2", line={"color": "#f87171", "dash": "dot"},
         ))
-    layout = _layout("FPS")
+    layout = _layout("Frames/sec")
     layout["yaxis2"] = {
         "title": "Jank %",
         "overlaying": "y",
@@ -252,19 +295,28 @@ def generate_report(samples_json: Path, output_html: Path) -> Path:
     if "t" not in df.columns:
         df["t"] = pd.Series(dtype=float)
 
-    charts = [
+    duration = float(df["t"].max()) if not df["t"].empty else 0.0
+
+    charts: list[dict[str, Any]] = []
+    timeline = _timeline_figure(events, duration)
+    if timeline is not None:
+        charts.append({"title": "Screen timeline", "fig": timeline})
+    charts.extend([
         {"title": "CPU", "fig": _cpu_figure(df)},
         {"title": "Memory", "fig": _memory_figure(df)},
         {"title": "Network", "fig": _network_figure(df)},
-        {"title": "FPS / jank", "fig": _fps_figure(df)},
+        {"title": "Render activity (frames/sec) & jank", "fig": _fps_figure(df)},
         {"title": "Battery", "fig": _battery_figure(df)},
         {"title": "Thermal", "fig": _thermal_figure(df)},
-    ]
+    ])
 
-    # Overlay screen-transition markers on every chart for correlation.
-    duration = float(df["t"].max()) if not df["t"].empty else 0.0
+    # Tooltip enrichment: fold the active activity/fragment at each timestamp
+    # into every metric chart's unified hover. The swim-lane on top carries
+    # the at-a-glance view; this is the precise per-tick lookup.
     for chart in charts:
-        _apply_event_shapes(chart["fig"], events, duration)
+        if chart["title"] == "Screen timeline":
+            continue
+        _add_context_hover(chart["fig"], df, events, duration)
 
     rendered_charts: list[dict[str, str]] = []
     for i, chart in enumerate(charts):

@@ -96,22 +96,33 @@ Each run writes to `runs/<timestamp>-<pkg>/`:
 | CPU % (per-core summed) | `top -n 1 -b -p <pid>` |
 | RAM: PSS / Java / Native / Graphics / Code / Stack | `dumpsys meminfo <package>` |
 | Network rx/tx (per-tick deltas) | `/proc/net/xt_qtaguid/stats` (falls back to `dumpsys netstats --uid=<uid>` on Android 10+) |
-| FPS, jank %, frame p50/p90/p95/p99 | `dumpsys gfxinfo <package>` (reset between ticks) |
+| Frame rendering rate, jank %, frame p50/p90/p95/p99 | `dumpsys gfxinfo <package>` (window read directly from `Uptime` − `Stats since` for accuracy) |
 | Battery: level, temp, voltage, status | `dumpsys battery` |
 | Thermal: status, skin/cpu/gpu/battery °C | `dumpsys thermalservice` |
-| Screen transitions (as timeline events) | `dumpsys activity activities` |
+| Activity transitions | `dumpsys activity activities` |
+| Active fragment (top-level + deepest visible child) | `dumpsys activity <component>` — AndroidX FragmentManager apps only |
 
 CPU is reported as `top`'s raw `%CPU` — i.e., summed across cores. 200% means
 the process is using two cores worth of time. This is the same convention
 used by Android Studio's CPU profiler.
 
+A note on FPS: Android UI rendering is **demand-driven**. The app submits a
+frame only when something on screen changes (animation tick, scroll, view
+invalidation), so `frames/sec` goes to zero on a static screen — that's
+correct, not a bug. `androidperf` reports it as an *activity trace* and
+leads the smoothness summary with **jank %** and **p95 frame time**, which
+are the metrics that actually correlate with perceived smoothness.
+
 ## HTML report
 
-Each chart gets vertical dashed markers for every screen transition, so jank
-spikes line up with user navigation. The report also includes:
+The report opens with a compact **screen-timeline swim-lane** (Activity row +
+Fragment row) showing colored segments across the session — one glance tells
+you what was on screen when. Below that, the metric charts have a unified
+hover that includes the active activity + fragment at any timestamp, so you
+can correlate spikes with user navigation without leaving the chart. The
+report also includes:
 
 - Summary stat cards (averages, peaks, network totals, battery delta).
-- A flat "Screen timeline" list of every transition with elapsed time.
 - Interactive Plotly charts — zoom, pan, hover tooltips, toggle traces in the
   legend. No network required to view the report; `plotly.js` is inlined.
 
@@ -145,7 +156,7 @@ src/androidperf/
 ├── device.py             # adb detection, package list, app launch
 ├── session.py            # polling loop, signal handling, JSON writer
 ├── summary.py            # shared summary-card computation (HTML + terminal)
-├── collectors/           # cpu, memory, network, fps, battery, thermal, activity
+├── collectors/           # cpu, memory, network, fps, battery, thermal, activity, fragments
 ├── ui/                   # live.py (Live dashboard) + summary.py (end-of-run panel)
 └── report/               # Jinja2 + Plotly → self-contained HTML
 ```

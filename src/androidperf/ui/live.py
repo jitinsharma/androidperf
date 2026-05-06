@@ -259,17 +259,17 @@ class LiveDashboard:
         table.add_column(justify="left")
         table.add_column(justify="right")
         table.add_row(
-            Text("fps", style="dim"),
-            Text(f"{fps_val:5.1f}" if fps_val is not None else "—", style="bold yellow"),
-        )
-        table.add_row(
             Text("jank %", style="dim"),
-            Text(f"{jank:.1f}" if jank is not None else "—", style="bold"),
+            Text(f"{jank:.1f}" if jank is not None else "—", style="bold yellow"),
         )
         table.add_row(
             Text("p95 ms", style="dim"),
             Text(f"{p95:.0f}" if p95 is not None else "—", style="bold"),
         )
+        table.add_row(
+            Text("frames/s", style="dim"),
+            Text(f"{fps_val:5.1f}" if fps_val is not None else "—", style="dim"),
+        )
         spark = Text(_sparkline(self._series.fps), style="yellow")
         body = Align.center(Group(table, Text(""), Align.center(spark)), vertical="middle")
-        return Panel(body, title="[bold]FPS[/bold]", border_style="yellow", height=_PANEL_HEIGHT)
+        return Panel(body, title="[bold]Render[/bold]", border_style="yellow", height=_PANEL_HEIGHT)

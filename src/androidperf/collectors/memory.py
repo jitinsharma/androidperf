@@ -56,5 +56,8 @@ def parse_meminfo(output: str) -> dict[str, float]:
 
 
 def sample(device: AdbDevice, *, package: str, **_: object) -> dict[str, float]:
-    out = device.shell(f"dumpsys meminfo {package}")
+    # `-s` (short) skips the per-allocation breakdown that makes the default
+    # dump take 3-6 s on apps with large heaps; the `App Summary` block we
+    # parse below is still present.
+    out = device.shell(f"dumpsys meminfo -s {package}")
     return parse_meminfo(out)

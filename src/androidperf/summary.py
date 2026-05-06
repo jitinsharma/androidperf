@@ -41,17 +41,27 @@ def build_cards(df: pd.DataFrame) -> list[dict[str, str]]:
             "value": f"{df['pss_kb'].mean() / 1024:.1f} MB",
             "sub": f"peak {df['pss_kb'].max() / 1024:.1f} MB",
         })
+    # FPS / jank / frame-time averages only make sense over samples where
+    # the app actually rendered. Idle ticks report fps=0 (no frames drawn),
+    # and including them drags the mean toward zero — a 60 fps app looks
+    # like 3 fps if it sat idle 95% of the session.
+    # Smoothness metrics: jank % and p95 frame time, computed only over
+    # ticks where the app actually rendered (idle ticks have no frames so
+    # the device reports nonsense values for those windows).
     if "fps" in df.columns and df["fps"].max() > 0:
-        sub = ""
-        if "p95_ms" in df.columns:
-            sub = f"p95 frame {df['p95_ms'].mean():.0f} ms"
-        cards.append({"label": "Avg FPS", "value": _fmt_mean(df["fps"]), "sub": sub})
-    if "jank_pct" in df.columns:
-        cards.append({
-            "label": "Avg jank",
-            "value": f"{_fmt_mean(df['jank_pct'])} %",
-            "sub": f"max {df['jank_pct'].max():.1f}%",
-        })
+        active = df[df["fps"] > 0]
+        if "jank_pct" in active.columns:
+            cards.append({
+                "label": "Avg jank",
+                "value": f"{_fmt_mean(active['jank_pct'])} %",
+                "sub": f"max {active['jank_pct'].max():.1f}%",
+            })
+        if "p95_ms" in active.columns and not active["p95_ms"].dropna().empty:
+            cards.append({
+                "label": "Frame time",
+                "value": f"{active['p95_ms'].mean():.0f} ms",
+                "sub": "p95, while rendering",
+            })
     if "rx_b" in df.columns:
         total_rx_kb = df["rx_b"].sum() / 1024.0
         total_tx_kb = df.get("tx_b", pd.Series([0])).sum() / 1024.0
