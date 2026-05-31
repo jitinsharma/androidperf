@@ -295,9 +295,13 @@ def generate_report(samples_json: Path, output_html: Path) -> Path:
     samples = payload.get("samples", [])
     events = payload.get("events", [])
     gc_events = payload.get("gc_events", [])
+    thread_dumps = payload.get("thread_dumps", [])
     meta = payload.get("meta", {})
 
-    findings = analyze_insights(samples=samples, events=events, meta=meta, gc_events=gc_events)
+    findings = analyze_insights(
+        samples=samples, events=events, meta=meta,
+        gc_events=gc_events, thread_dumps=thread_dumps,
+    )
     findings_dicts = [dataclasses.asdict(f) for f in findings]
 
     df = pd.DataFrame(samples)

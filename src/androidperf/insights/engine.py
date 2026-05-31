@@ -14,6 +14,7 @@ def analyze(
     events: list[dict[str, Any]],
     meta: dict[str, Any],
     gc_events: list[dict[str, Any]] | None = None,
+    thread_dumps: list[dict[str, Any]] | None = None,  # reserved, unused
 ) -> list[Finding]:
     if len(samples) < MIN_SAMPLES:
         return []

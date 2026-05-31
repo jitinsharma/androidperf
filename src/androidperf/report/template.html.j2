@@ -138,8 +138,6 @@
         .badge-cat      { background: #1d2230; color: #8a94a6; }
         .finding-title  { font-size: 14px; font-weight: 600; color: #e6e9ef; }
         .finding-desc   { font-size: 13px; color: #a3adc2; margin-bottom: 6px; }
-        .finding-rec    { font-size: 12px; color: #6b7689; }
-        .finding-rec strong { color: #8a94a6; }
         .finding-meta   { font-size: 11px; color: #4b5568; margin-top: 6px; }
         footer {
             margin-top: 32px;
@@ -187,7 +185,6 @@
                 <span class="finding-title">{{ f.title }}</span>
             </div>
             <div class="finding-desc">{{ f.description }}</div>
-            <div class="finding-rec"><strong>Fix:</strong> {{ f.recommendation }}</div>
             {% if f.timestamps %}
             <div class="finding-meta">
                 First at {{ f.timestamps[0] }}s

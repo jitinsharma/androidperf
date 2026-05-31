@@ -129,6 +129,7 @@ async def api_run_insights(run_id: str, runs_dir: str = "./runs") -> list[dict]:
         events=payload.get("events", []),
         meta=payload.get("meta", {}),
         gc_events=payload.get("gc_events", []),
+        thread_dumps=payload.get("thread_dumps", []),
     )
     return [dataclasses.asdict(f) for f in findings]
 
