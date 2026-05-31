@@ -28,7 +28,7 @@ self-contained HTML report at the end, and automatically surfaces plain-English
 | **adb** | Android Platform Tools on `$PATH`. macOS: `brew install --cask android-platform-tools`. Debian/Ubuntu: `sudo apt install adb`. Windows/other: <https://developer.android.com/tools/releases/platform-tools>. Verify with `adb version`. |
 | **Android device** | Physical device or emulator running **Android 7.0 (SDK 24) or newer** — `dumpsys gfxinfo framestats` needs SDK 24+. |
 | **USB debugging** | Enabled in Developer Options, and the host authorized (`adb devices` shows the serial as `device`, not `unauthorized`). |
-| **Python deps** | Installed automatically: `adbutils`, `typer`, `rich`, `jinja2`, `plotly`, `pandas`. Web UI additionally needs `fastapi`, `uvicorn`, `websockets` (`pip install androidperf[ui]`). |
+| **Python deps** | Installed automatically: `adbutils`, `typer`, `rich`, `jinja2`, `plotly`, `pandas`, `fastapi`, `uvicorn`. |
 
 `adb` is **not** a Python package — it's a standalone binary. If `androidperf devices` says "command not found", that's the missing piece.
 
@@ -36,11 +36,8 @@ self-contained HTML report at the end, and automatically surfaces plain-English
 
 ```bash
 pipx install androidperf          # recommended — isolated, globally available
-pipx install "androidperf[ui]"    # with web UI support
-
 # or
 pip install androidperf
-pip install "androidperf[ui]"     # with web UI support
 ```
 
 From source:

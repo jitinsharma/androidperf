@@ -150,7 +150,7 @@ def ui(
     try:
         import uvicorn
     except ImportError:
-        _fail("Install androidperf[ui] to use the web interface:  pip install androidperf[ui]")
+        _fail("uvicorn is missing — reinstall androidperf:  pipx upgrade androidperf  or  pip install --upgrade androidperf")
 
     import webbrowser
     import threading

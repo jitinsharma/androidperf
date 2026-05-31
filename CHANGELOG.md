@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-05-31
+
+### Changed
+- `fastapi` and `uvicorn[standard]` moved from the optional `[ui]` extra into
+  core dependencies. `pipx install androidperf` and `pip install androidperf`
+  now include the web UI without needing a separate `[ui]` suffix.
+
 ## [0.2.0] - 2026-05-31
 
 ### Added

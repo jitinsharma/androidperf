@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "androidperf"
-version = "0.2.0"
+version = "0.2.1"
 description = "ADB-based Android performance metric recorder with live TUI and HTML report"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -32,6 +32,8 @@ dependencies = [
     "jinja2>=3.1.0",
     "plotly>=5.22.0",
     "pandas>=2.2.0",
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
 ]
 
 [project.urls]
@@ -44,10 +46,6 @@ Changelog  = "https://github.com/jitinsharma/androidperf/blob/main/CHANGELOG.md"
 dev = [
     "pytest>=8.0.0",
     "ruff>=0.5.0",
-]
-ui = [
-    "fastapi>=0.111",
-    "uvicorn[standard]>=0.29",
 ]
 
 [project.scripts]
