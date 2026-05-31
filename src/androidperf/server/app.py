@@ -117,6 +117,14 @@ async def api_run_samples(run_id: str, runs_dir: str = "./runs") -> dict:
     return json.loads(path.read_text())
 
 
+@app.get("/api/runs/{run_id}/heap")
+async def api_run_heap(run_id: str, runs_dir: str = "./runs") -> dict:
+    path = Path(runs_dir) / run_id / "heap_histogram.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="No heap histogram for this run (app may not be debuggable)")
+    return json.loads(path.read_text())
+
+
 @app.get("/api/runs/{run_id}/insights")
 async def api_run_insights(run_id: str, runs_dir: str = "./runs") -> list[dict]:
     path = Path(runs_dir) / run_id / "samples.json"

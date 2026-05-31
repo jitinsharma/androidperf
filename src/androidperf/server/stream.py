@@ -70,6 +70,7 @@ class RecordingSession:
                 output_dir=output_dir,
                 launch=launch,
                 on_sample=self._on_sample,
+                on_status=self._on_status,
                 stop_event=self._stop_event,
             )
             self.run_dir = run_dir
@@ -81,6 +82,9 @@ class RecordingSession:
 
     def _on_sample(self, sample: dict[str, Any]) -> None:
         self._push({"type": "sample", "data": sample})
+
+    def _on_status(self, message: str) -> None:
+        self._push({"type": "status", "message": message})
 
     def _push(self, msg: dict[str, Any]) -> None:
         if self._loop and not self._loop.is_closed():

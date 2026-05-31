@@ -4,6 +4,59 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Insights engine** — post-session analysis pass that surfaces plain-English
+  findings with severity (critical / warning / info) and fix recommendations.
+  Five detector categories: memory, cpu, jank, threads, network. Findings appear
+  as coloured cards in the HTML report and in the web UI done panel.
+  - Memory: Java heap growth via linear regression, GC-correlated jank,
+    allocation-pressure / explicit / native-alloc GC pressure, Activity leak
+    (object count never decreasing after screen transitions), excessive View counts.
+  - CPU: sustained high load (>70% in >30% of ticks), thermal throttle jank,
+    network-driven CPU spikes.
+  - Jank: chronic jank over rendering ticks only, disk-write jank correlation.
+  - Threads: thread count growth / possible leak with activity + library
+    attribution, thread storm >100 concurrent threads.
+  - Network: chatty network (>80% ticks with traffic), large payload spikes.
+- **Thread name attribution** — `/proc/<pid>/task/*/status` thread names are
+  captured each tick. Thread findings include library labels (OkHttp, RxJava,
+  Glide, Room, Coroutines, etc.) derived from name prefixes, and the
+  activity/fragment visible when new threads first appeared.
+- **`/proc` collectors** (`collectors/procfs.py`) — thread count, voluntary and
+  involuntary context switches, disk read/write bytes (per-tick deltas).
+- **Object count collector** — `dumpsys meminfo` Objects block parsed for
+  Activities, Views, and AppContexts per tick.
+- **Logcat GC collector** (`collectors/logcat.py`) — background thread tailing
+  `adb logcat -s art` for the full session duration; parses ART GC log lines
+  into structured events (reason, freed KB, timestamp). Stored as `gc_events`
+  in `samples.json`.
+- **Heap dump + hprof parser** — at end of session, `am dumpheap` is triggered
+  automatically for debug builds / emulators. A built-in minimal binary hprof
+  parser extracts the class histogram (instance count + shallow bytes) without
+  any external dependencies. Saved as `heap_histogram.json` and rendered as a
+  searchable table in the HTML report. Silently skipped for non-debuggable apps.
+- **Web UI** (`androidperf ui`) — FastAPI server with WebSocket live streaming.
+  Browser-based interface to configure + start + stop recordings, watch metrics
+  update in real time, view past runs, and open HTML reports.
+  - `GET /api/devices`, `/api/packages`, `/api/runs`, `/api/runs/{id}/report`,
+    `/api/runs/{id}/samples`, `/api/runs/{id}/insights`, `/api/runs/{id}/heap`
+  - `WS /ws/record` — start / stream / stop a live recording.
+- **`androidperf ui` CLI command** — launches the web server and opens a
+  browser tab automatically.
+- **Status callback** in `run_session` — `on_status` hook lets the web UI
+  display post-session progress ("Capturing heap dump…") before the done panel
+  appears, so the UI doesn't appear frozen during the heap capture wait.
+
+### Fixed
+
+- Thread storm finding previously showed inflated thread counts beside library
+  names (e.g. "ThreadPoolExecutor (1217)") because occurrences were summed
+  across all high-thread polling ticks instead of counted in the single
+  peak-thread snapshot. Now reads from the sample where thread count was highest.
+
 ## [0.1.2] - 2026-05-06
 
 ### Added

@@ -289,9 +289,21 @@ def _thermal_figure(df: pd.DataFrame) -> go.Figure:
 
 
 
-def generate_report(samples_json: Path, output_html: Path) -> Path:
+def generate_report(
+    samples_json: Path,
+    output_html: Path,
+    heap_histogram: list[dict] | None = None,
+) -> Path:
     """Build a self-contained HTML report from a samples.json file."""
-    payload = json.loads(Path(samples_json).read_text())
+    samples_json = Path(samples_json)
+    payload = json.loads(samples_json.read_text())
+
+    if heap_histogram is None:
+        hist_path = samples_json.parent / "heap_histogram.json"
+        if hist_path.exists():
+            heap_histogram = json.loads(hist_path.read_text()).get("histogram", [])
+        else:
+            heap_histogram = []
     samples = payload.get("samples", [])
     events = payload.get("events", [])
     gc_events = payload.get("gc_events", [])
@@ -354,6 +366,7 @@ def generate_report(samples_json: Path, output_html: Path) -> Path:
         summary_cards=build_cards(df),
         events=events,
         findings=findings_dicts,
+        heap_histogram=heap_histogram[:100],
     )
 
     output_html = Path(output_html)

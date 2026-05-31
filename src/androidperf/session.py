@@ -15,7 +15,7 @@ from typing import Any
 from adbutils import AdbDevice
 from rich.console import Console
 
-from .collectors import activity, battery, cpu, fps, fragments, memory, network, procfs, thermal
+from .collectors import activity, battery, cpu, fps, fragments, heapdump, hprof_parse, memory, network, procfs, thermal
 from .collectors.logcat import LogcatCollector
 from .device import DeviceError, DeviceInfo, get_pid, get_uid, launch_app
 from .report.generate import generate_report
@@ -51,6 +51,7 @@ def run_session(
     output_dir: Path,
     launch: bool,
     on_sample: Callable[[dict[str, Any]], None] | None = None,
+    on_status: Callable[[str], None] | None = None,
     stop_event: threading.Event | None = None,
 ) -> Path:
     """Drive the polling loop and write samples.json + report.html. Returns run dir."""
@@ -279,9 +280,27 @@ def run_session(
     json_path = run_dir / "samples.json"
     _atomic_write_json(json_path, payload)
 
-    Console().print(render_summary(samples))
+    con = Console()
+
+    # Heap dump: best-effort, debug builds and emulators only.
+    heap_histogram: list[dict] = []
+    hprof_path = run_dir / "heap.hprof"
+    if on_status:
+        on_status("Capturing heap dump…")
+    con.print("[dim]Capturing heap dump (debug builds only)…[/dim]")
+    try:
+        if heapdump.capture(device, package, hprof_path):
+            heap_histogram = hprof_parse.parse_histogram(hprof_path)
+            _atomic_write_json(run_dir / "heap_histogram.json", {"histogram": heap_histogram})
+            con.print(f"[green]✓ Heap dump:[/green] {len(heap_histogram)} classes → heap_histogram.json")
+        else:
+            con.print("[dim]  Heap dump skipped (app not debuggable or not supported)[/dim]")
+    except Exception as exc:  # noqa: BLE001
+        con.print(f"[dim]  Heap dump failed: {exc}[/dim]")
+
+    con.print(render_summary(samples))
 
     html_path = run_dir / "report.html"
-    generate_report(json_path, html_path)
+    generate_report(json_path, html_path, heap_histogram=heap_histogram)
 
     return run_dir

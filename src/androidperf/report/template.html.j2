@@ -139,6 +139,28 @@
         .finding-title  { font-size: 14px; font-weight: 600; color: #e6e9ef; }
         .finding-desc   { font-size: 13px; color: #a3adc2; margin-bottom: 6px; }
         .finding-meta   { font-size: 11px; color: #4b5568; margin-top: 6px; }
+        .heap-section { margin-bottom: 28px; }
+        .heap-section h2 {
+            font-size: 13px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.8px; color: #a3adc2; margin: 0 0 12px 0;
+        }
+        .heap-section small { color: #6b7689; font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+        #hist-filter {
+            width: 100%; background: #0f1115; border: 1px solid #1d2230;
+            border-radius: 4px; padding: 6px 10px; color: #e6e9ef;
+            font-size: 13px; outline: none; margin-bottom: 10px; display: block;
+        }
+        #hist-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        #hist-table th {
+            color: #6b7689; text-align: left; border-bottom: 1px solid #1d2230;
+            padding: 6px 8px; font-weight: 500; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        #hist-table th.r, #hist-table td.r { text-align: right; }
+        .hist-row { border-bottom: 1px solid #141823; }
+        .hist-row td { padding: 4px 8px; }
+        .hist-row .cn { font-family: monospace; word-break: break-all; color: #a3adc2; }
+        .hist-row.app-row .cn { color: #60a5fa; }
         footer {
             margin-top: 32px;
             padding-top: 16px;
@@ -194,6 +216,43 @@
             {% endif %}
         </div>
         {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if heap_histogram %}
+    <section class="heap-section">
+        <h2>Heap Histogram <small>· {{ heap_histogram | length }} classes · app classes highlighted</small></h2>
+        <input id="hist-filter" type="text" placeholder="Filter by class name…">
+        <table id="hist-table">
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th class="r">Instances</th>
+                    <th class="r">Shallow KB</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in heap_histogram %}
+                <tr class="hist-row{% if meta.package and row.class_name.startswith(meta.package) %} app-row{% endif %}">
+                    <td class="cn">{{ row.class_name }}</td>
+                    <td class="r">{{ row.instances }}</td>
+                    <td class="r" style="color:#8a94a6">{{ (row.shallow_bytes / 1024) | round(1) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <script>
+        (function () {
+            var inp = document.getElementById('hist-filter');
+            var rows = document.querySelectorAll('#hist-table .hist-row');
+            inp.addEventListener('input', function () {
+                var q = inp.value.toLowerCase();
+                rows.forEach(function (r) {
+                    r.style.display = q && r.querySelector('.cn').textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+                });
+            });
+        })();
+        </script>
     </section>
     {% endif %}
 

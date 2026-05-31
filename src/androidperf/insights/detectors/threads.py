@@ -92,8 +92,9 @@ def _thread_leak(samples: list[dict[str, Any]]) -> list[Finding]:
         lib_str = ", ".join(f"{lib} ({cnt})" for lib, cnt in lib_counts)
         attribution = f" +{len(biggest['new_names'])} threads during [{context}]: {lib_str}."
     elif any(s.get("thread_names") for s in samples):
-        name_lists = [s["thread_names"] for s in samples if s.get("thread_names")]
-        top = _top_thread_libraries(name_lists)
+        last_names = next((s["thread_names"] for s in reversed(samples) if s.get("thread_names")), [])
+        lib_counts = Counter(_library_for(n) for n in last_names).most_common(3)
+        top = ", ".join(f"{lib} ({cnt})" for lib, cnt in lib_counts)
         if top:
             attribution = f" Dominant threads: {top}."
 
@@ -131,10 +132,12 @@ def _thread_storm(samples: list[dict[str, Any]]) -> list[Finding]:
     if context_parts:
         context_str = f" During: [{' → '.join(context_parts)}]."
 
-    name_lists = [s.get("thread_names") for s in high if s.get("thread_names")]
+    peak_sample = max(high, key=lambda s: s.get("threads") or 0)
+    peak_names = peak_sample.get("thread_names") or []
     lib_str = ""
-    if name_lists:
-        top = _top_thread_libraries(name_lists)
+    if peak_names:
+        lib_counts = Counter(_library_for(n) for n in peak_names).most_common(3)
+        top = ", ".join(f"{lib} ({cnt})" for lib, cnt in lib_counts)
         if top:
             lib_str = f" Top threads: {top}."
 

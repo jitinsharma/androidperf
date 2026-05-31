@@ -797,6 +797,7 @@ function openWS({ interval, duration }) {
       return;
     }
     if (msg.type === 'sample') { onSample(msg.data); return; }
+    if (msg.type === 'status') { document.getElementById('rec-meta').textContent = msg.message; return; }
     if (msg.type === 'done')   { onDone(msg.run_id); return; }
   };
 
