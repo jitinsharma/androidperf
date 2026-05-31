@@ -141,5 +141,33 @@ def _prompt_package(device) -> str:  # noqa: ANN001 - AdbDevice has no public ty
     return shown[idx - 1]
 
 
+@app.command()
+def ui(
+    port: int = typer.Option(8421, "--port", "-p", help="Port to listen on."),
+    runs_dir: Path = typer.Option(Path("./runs"), "--runs-dir", help="Directory of past runs."),
+) -> None:
+    """Launch the androidperf web UI."""
+    try:
+        import uvicorn
+    except ImportError:
+        _fail("Install androidperf[ui] to use the web interface:  pip install androidperf[ui]")
+
+    import webbrowser
+    import threading
+
+    url = f"http://localhost:{port}"
+    console.print(f"[green]androidperf UI[/green] → {url}")
+    console.print("[dim]Press Ctrl+C to stop.[/dim]")
+
+    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+
+    uvicorn.run(
+        "androidperf.server.app:app",
+        host="127.0.0.1",
+        port=port,
+        log_level="warning",
+    )
+
+
 if __name__ == "__main__":
     app()

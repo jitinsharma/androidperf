@@ -6,6 +6,7 @@ import json
 import signal
 import threading
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
@@ -48,6 +49,8 @@ def run_session(
     duration: float | None,
     output_dir: Path,
     launch: bool,
+    on_sample: Callable[[dict[str, Any]], None] | None = None,
+    stop_event: threading.Event | None = None,
 ) -> Path:
     """Drive the polling loop and write samples.json + report.html. Returns run dir."""
     if device_info.sdk and device_info.sdk < 24:
@@ -68,13 +71,15 @@ def run_session(
 
     fps.reset(device, package)
 
-    stop = threading.Event()
+    stop = stop_event if stop_event is not None else threading.Event()
 
     def _on_sigint(signum: int, frame: object) -> None:  # noqa: ARG001
         stop.set()
 
+    _is_main_thread = threading.current_thread() is threading.main_thread()
     previous_sigint = signal.getsignal(signal.SIGINT)
-    signal.signal(signal.SIGINT, _on_sigint)
+    if _is_main_thread:
+        signal.signal(signal.SIGINT, _on_sigint)
 
     started_at = _utcnow_iso()
     started_mono = time.monotonic()
@@ -189,6 +194,8 @@ def run_session(
                     sample["_fragment_error"] = repr(exc)
 
                 samples.append(sample)
+                if on_sample is not None:
+                    on_sample(sample)
                 tick_index += 1
                 ui.update(
                     sample=sample,
@@ -200,7 +207,8 @@ def run_session(
                 # Target cadence — don't drift if a sample took too long.
                 next_tick = max(next_tick + interval, time.monotonic())
     finally:
-        signal.signal(signal.SIGINT, previous_sigint)
+        if _is_main_thread:
+            signal.signal(signal.SIGINT, previous_sigint)
 
     # Persist first — anything below (summary panel, HTML render) is best-effort
     # post-processing. A failure there must not lose samples that were captured.

@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>androidperf</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%237c3aed'/></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0d1117;
+      --surface:      #161b22;
+      --surface2:     #21262d;
+      --border:       #30363d;
+      --border-hi:    #484f58;
+      --text:         #e6edf3;
+      --muted:        #7d8590;
+      --accent:       #7c3aed;
+      --accent-h:     #6d28d9;
+      --cpu:          #f97316;
+      --ram:          #3b82f6;
+      --fps:          #10b981;
+      --net-rx:       #8b5cf6;
+      --net-tx:       #ec4899;
+      --battery:      #f59e0b;
+      --danger:       #ef4444;
+      --success:      #22c55e;
+      --r:            8px;
+      --r-lg:         12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    .hdr {
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 54px;
+      gap: 32px;
+    }
+    .logo {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .nav { display: flex; gap: 2px; }
+    .nav-btn {
+      background: none; border: none;
+      color: var(--muted); padding: 5px 12px;
+      border-radius: 6px; cursor: pointer;
+      font-size: 13px; font-weight: 500;
+      transition: all .15s;
+    }
+    .nav-btn:hover  { color: var(--text); background: var(--surface2); }
+    .nav-btn.active { color: var(--text); background: var(--surface2); }
+
+    /* ── Layout ─────────────────────────────────────── */
+    .main { max-width: 960px; margin: 0 auto; padding: 28px 24px; }
+    .tab  { display: none; }
+    .tab.active { display: block; }
+
+    /* ── Step bar ───────────────────────────────────── */
+    .steps {
+      display: flex; align-items: center;
+      gap: 8px; margin-bottom: 28px;
+    }
+    .si {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 12px; font-weight: 500;
+    }
+    .si.active { color: var(--text); }
+    .si.done   { color: var(--success); }
+    .si-n {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+    }
+    .si.active .si-n { background: var(--accent);  border-color: var(--accent);  color: #fff; }
+    .si.done   .si-n { background: var(--success); border-color: var(--success); color: #fff; }
+    .step-sep { flex: 1; max-width: 36px; height: 1px; background: var(--border); }
+
+    /* ── Panels ─────────────────────────────────────── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Section header ─────────────────────────────── */
+    .sec-hdr {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; margin-bottom: 16px;
+    }
+    .sec-title { font-size: 15px; font-weight: 600; }
+    .sec-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Buttons ────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 13px; border-radius: var(--r);
+      border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all .15s; text-decoration: none;
+    }
+    .btn:hover { background: var(--surface); border-color: var(--border-hi); }
+    .btn-primary { background: var(--accent);  border-color: var(--accent);  color: #fff; }
+    .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+    .btn-danger  { background: var(--danger);  border-color: var(--danger);  color: #fff; }
+    .btn-danger:hover  { background: #dc2626;  border-color: #dc2626; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+    /* ── Device cards ───────────────────────────────── */
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px; margin-bottom: 12px;
+    }
+    .device-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 16px;
+      cursor: pointer; transition: all .15s;
+    }
+    .device-card:hover    { border-color: var(--accent); background: var(--surface2); }
+    .device-card.selected { border-color: var(--accent); background: var(--surface2); }
+    .dc-name   { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .dc-serial {
+      font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+      font-size: 11px; color: var(--muted); margin-bottom: 10px;
+    }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      background: var(--surface2); color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Package list ───────────────────────────────── */
+    .search-wrap { position: relative; margin-bottom: 10px; }
+    .search-icon {
+      position: absolute; left: 10px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: 15px; pointer-events: none;
+    }
+    .search-input {
+      width: 100%; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      color: var(--text); padding: 8px 12px 8px 34px;
+      font-size: 13px; outline: none; transition: border-color .15s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--muted); }
+    .pkg-list {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); max-height: 380px; overflow-y: auto;
+    }
+    .pkg-item {
+      padding: 9px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace;
+      font-size: 12px; transition: background .1s;
+    }
+    .pkg-item:last-child { border-bottom: none; }
+    .pkg-item:hover { background: var(--surface2); }
+    .pkg-item.pkg-footer {
+      cursor: default; color: var(--muted);
+      font-family: inherit; font-size: 11px; padding: 8px 14px;
+    }
+
+    /* ── Config form ────────────────────────────────── */
+    .summary-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 14px 16px;
+      margin-bottom: 20px; display: flex; gap: 28px; flex-wrap: wrap;
+    }
+    .sum-key { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .sum-val { font-size: 13px; font-weight: 500; margin-top: 2px; }
+    .sum-val.mono { font-family: 'SF Mono', 'Cascadia Code', ui-monospace, monospace; font-size: 12px; }
+
+    .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .field-input {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r); color: var(--text);
+      padding: 8px 11px; font-size: 13px; outline: none;
+      transition: border-color .15s; width: 100%;
+    }
+    .field-input:focus { border-color: var(--accent); }
+
+    .toggle-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 13px; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      cursor: pointer; transition: border-color .15s; margin-bottom: 22px;
+      max-width: 360px;
+    }
+    .toggle-row:hover { border-color: var(--accent); }
+    .toggle {
+      width: 34px; height: 19px; background: var(--border);
+      border-radius: 10px; position: relative;
+      transition: background .15s; flex-shrink: 0;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: ''; position: absolute;
+      width: 15px; height: 15px; background: #fff;
+      border-radius: 50%; top: 2px; left: 2px;
+      transition: transform .15s;
+    }
+    .toggle.on::after { transform: translateX(15px); }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .toggle-sub   { font-size: 11px; color: var(--muted); }
+
+    /* ── Recording ──────────────────────────────────── */
+    .rec-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; padding: 12px 16px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg);
+    }
+    .rec-status { display: flex; align-items: center; gap: 10px; }
+    .pulse {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--danger); animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .rec-name { font-size: 13px; font-weight: 600; }
+    .rec-meta { font-size: 11px; color: var(--muted); font-family: 'SF Mono', ui-monospace, monospace; }
+    .rec-counters { display: flex; gap: 18px; align-items: center; }
+    .counter { font-size: 12px; color: var(--muted); }
+    .counter b { color: var(--text); }
+
+    .act-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r); padding: 9px 13px; margin-bottom: 14px;
+    }
+    .act-lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+    .act-val { font-family: 'SF Mono', ui-monospace, monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Charts ─────────────────────────────────────── */
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .chart-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 14px 16px;
+    }
+    .chart-hdr {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .chart-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .chart-cur   { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .chart-wrap  { height: 130px; position: relative; }
+
+    /* ── Stat cards ─────────────────────────────────── */
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .stat-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 13px 15px;
+    }
+    .sc-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .sc-value { font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 4px; }
+    .sc-sub   { font-size: 11px; color: var(--muted); }
+
+    /* ── Done panel ─────────────────────────────────── */
+    .done-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); padding: 48px 40px; text-align: center;
+    }
+    .done-icon  { font-size: 44px; margin-bottom: 14px; }
+    .done-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+    .done-sub   { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+    .done-acts  { display: flex; gap: 10px; justify-content: center; }
+
+    /* ── Past runs ──────────────────────────────────── */
+    .runs-table {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden;
+    }
+    .runs-thead {
+      display: grid; grid-template-columns: 1fr 170px 80px 110px;
+      padding: 9px 16px;
+      background: var(--surface2); border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .5px; color: var(--muted);
+    }
+    .run-row {
+      display: grid; grid-template-columns: 1fr 170px 80px 110px;
+      padding: 11px 16px; border-bottom: 1px solid var(--border);
+      align-items: center; transition: background .1s;
+    }
+    .run-row:last-child { border-bottom: none; }
+    .run-row:hover { background: var(--surface2); }
+    .run-pkg  { font-family: 'SF Mono', ui-monospace, monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .run-time { font-size: 12px; color: var(--muted); }
+    .run-n    { font-size: 12px; color: var(--muted); }
+
+    /* ── Shared ─────────────────────────────────────── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      margin-bottom: 18px; transition: color .15s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    .error-bar {
+      background: #2d1515; border: 1px solid #7f2020;
+      border-radius: var(--r); padding: 9px 13px;
+      color: #fca5a5; font-size: 13px;
+      margin-bottom: 14px; display: none;
+    }
+    .error-bar.show { display: block; }
+
+    .empty { text-align: center; padding: 56px 20px; color: var(--muted); }
+    .empty-icon  { font-size: 34px; margin-bottom: 10px; }
+    .empty-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+    .empty-sub   { font-size: 13px; }
+
+    .loading { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .75s linear infinite;
+      margin-right: 7px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo"><div class="logo-dot"></div>androidperf</div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showTab('record',this)">Record</button>
+    <button class="nav-btn"        onclick="showTab('runs',this)">Past Runs</button>
+  </nav>
+</header>
+
+<main class="main">
+
+  <!-- ═══════════════════════ RECORD TAB ═══════════════════════ -->
+  <div id="tab-record" class="tab active">
+
+    <div class="steps">
+      <div class="si active" id="si-1"><div class="si-n">1</div><span>Device</span></div>
+      <div class="step-sep"></div>
+      <div class="si" id="si-2"><div class="si-n">2</div><span>Package</span></div>
+      <div class="step-sep"></div>
+      <div class="si" id="si-3"><div class="si-n">3</div><span>Configure</span></div>
+      <div class="step-sep"></div>
+      <div class="si" id="si-4"><div class="si-n">4</div><span>Recording</span></div>
+    </div>
+
+    <div class="error-bar" id="error-bar"></div>
+
+    <!-- Step 1 — Devices -->
+    <div class="panel active" id="panel-devices">
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Select a device</div>
+          <div class="sec-sub">Connected ADB devices</div>
+        </div>
+        <button class="btn" onclick="loadDevices()">↺ Refresh</button>
+      </div>
+      <div id="device-list" class="device-grid"></div>
+    </div>
+
+    <!-- Step 2 — Packages -->
+    <div class="panel" id="panel-packages">
+      <div class="back-link" onclick="goToStep(1)">← Back</div>
+      <div class="sec-hdr">
+        <div>
+          <div class="sec-title">Select a package</div>
+          <div class="sec-sub" id="pkg-sub"></div>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" id="pkg-filter" type="text"
+               placeholder="Filter packages…" oninput="filterPackages(this.value)">
+      </div>
+      <div id="pkg-list" class="pkg-list"></div>
+    </div>
+
+    <!-- Step 3 — Configure -->
+    <div class="panel" id="panel-config">
+      <div class="back-link" onclick="goToStep(2)">← Back</div>
+      <div class="sec-hdr">
+        <div><div class="sec-title">Configure recording</div></div>
+      </div>
+      <div class="summary-card">
+        <div><div class="sum-key">Device</div><div class="sum-val" id="cfg-device"></div></div>
+        <div><div class="sum-key">Package</div><div class="sum-val mono" id="cfg-pkg"></div></div>
+      </div>
+      <div class="cfg-grid">
+        <div class="field">
+          <label class="field-label" for="cfg-interval">Interval (seconds)</label>
+          <input class="field-input" id="cfg-interval" type="number" value="1.0" min="0.1" step="0.1">
+        </div>
+        <div class="field">
+          <label class="field-label" for="cfg-duration">Max duration (seconds — blank = unlimited)</label>
+          <input class="field-input" id="cfg-duration" type="number" placeholder="unlimited" min="1" step="1">
+        </div>
+      </div>
+      <div class="toggle-row" id="toggle-row" onclick="toggleLaunch()">
+        <div class="toggle on" id="toggle-launch"></div>
+        <div>
+          <div class="toggle-label">Launch app automatically</div>
+          <div class="toggle-sub">Disable to attach to an already-running process</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="startRecording()">▶ Start Recording</button>
+    </div>
+
+    <!-- Step 4 — Live recording -->
+    <div class="panel" id="panel-recording">
+      <div class="rec-hdr">
+        <div class="rec-status">
+          <div class="pulse" id="rec-pulse"></div>
+          <div>
+            <div class="rec-name" id="rec-name">Recording</div>
+            <div class="rec-meta" id="rec-meta"></div>
+          </div>
+        </div>
+        <div class="rec-counters">
+          <div class="counter">Samples <b id="rec-samples">0</b></div>
+          <div class="counter">Elapsed <b id="rec-elapsed">0:00</b></div>
+          <button class="btn btn-danger btn-sm" id="btn-stop" onclick="stopRecording()">■ Stop</button>
+        </div>
+      </div>
+
+      <div class="act-bar">
+        <span class="act-lbl">Screen</span>
+        <span class="act-val" id="rec-activity">—</span>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <span class="chart-title" style="color:var(--cpu)">CPU</span>
+            <span class="chart-cur" id="cur-cpu" style="color:var(--cpu)">—</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-cpu"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <span class="chart-title" style="color:var(--ram)">Memory (PSS)</span>
+            <span class="chart-cur" id="cur-ram" style="color:var(--ram)">—</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-ram"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <span class="chart-title" style="color:var(--fps)">FPS</span>
+            <span class="chart-cur" id="cur-fps" style="color:var(--fps)">—</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-fps"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <span class="chart-title" style="color:var(--net-rx)">Network</span>
+            <span class="chart-cur" id="cur-net" style="color:var(--net-rx); font-size:13px;">—</span>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-net"></canvas></div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="sc-label">Battery</div>
+          <div class="sc-value" id="sc-batt" style="color:var(--battery)">—</div>
+          <div class="sc-sub"   id="sc-batt-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">Thermal</div>
+          <div class="sc-value" id="sc-therm">—</div>
+          <div class="sc-sub"   id="sc-therm-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">Jank</div>
+          <div class="sc-value" id="sc-jank" style="color:var(--fps)">—</div>
+          <div class="sc-sub"   id="sc-jank-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">p95 Frame</div>
+          <div class="sc-value" id="sc-p95">—</div>
+          <div class="sc-sub">ms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 — Done -->
+    <div class="panel" id="panel-done">
+      <div class="done-card">
+        <div class="done-icon">✓</div>
+        <div class="done-title">Recording complete</div>
+        <div class="done-sub" id="done-sub"></div>
+        <div class="done-acts">
+          <a class="btn btn-primary" id="btn-report" href="#" target="_blank">Open Report</a>
+          <button class="btn" onclick="goToStep(1)">Record Again</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-record -->
+
+  <!-- ═══════════════════════ PAST RUNS TAB ═══════════════════════ -->
+  <div id="tab-runs" class="tab">
+    <div class="sec-hdr">
+      <div>
+        <div class="sec-title">Past Runs</div>
+        <div class="sec-sub">Previously recorded sessions</div>
+      </div>
+      <button class="btn" onclick="loadRuns()">↺ Refresh</button>
+    </div>
+    <div id="runs-container"></div>
+  </div>
+
+</main>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────────────────────────────
+const S = {
+  step: 1,
+  devices: [],
+  selectedDevice: null,   // { serial, label, model, manufacturer, sdk }
+  packages: [],
+  filtered: [],
+  selectedPkg: null,
+  launchApp: true,
+  ws: null,
+  sampleCount: 0,
+  startedAt: 0,
+  elapsedTimer: null,
+  charts: {},
+  buf: { labels:[], cpu:[], ram:[], fps:[], rx:[], tx:[] },
+  MAX: 60,
+};
+
+const THERMAL_NAMES = ['None','Light','Moderate','Severe','Critical','Emergency','Shutdown'];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tab / step navigation
+// ─────────────────────────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'runs') loadRuns();
+}
+
+const PANEL_IDS = ['devices','packages','config','recording','done'];
+
+function goToStep(n) {
+  S.step = n;
+  PANEL_IDS.forEach((id, i) => {
+    document.getElementById('panel-' + id).classList.toggle('active', i === n - 1);
+  });
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('si-' + i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+  clearError();
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-bar');
+  el.textContent = '⚠ ' + msg;
+  el.classList.add('show');
+}
+function clearError() {
+  document.getElementById('error-bar').classList.remove('show');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 1 — Devices
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadDevices() {
+  const el = document.getElementById('device-list');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>Detecting devices…</div>';
+  clearError();
+  try {
+    const r = await fetch('/api/devices');
+    if (!r.ok) throw new Error(await r.text());
+    S.devices = await r.json();
+  } catch (e) {
+    el.innerHTML = '';
+    showError('Failed to list devices: ' + e.message);
+    return;
+  }
+  if (!S.devices.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">📱</div>
+      <div class="empty-title">No devices found</div>
+      <div class="empty-sub">Plug in a device or start an emulator, then refresh.</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = S.devices.map(d => `
+    <div class="device-card" data-serial="${esc(d.serial)}">
+      <div class="dc-name">${esc(d.manufacturer)} ${esc(d.model)}</div>
+      <div class="dc-serial">${esc(d.serial)}</div>
+      <span class="badge">SDK ${d.sdk}</span>
+    </div>
+  `).join('');
+  el.querySelectorAll('.device-card').forEach(card => {
+    card.addEventListener('click', () => {
+      el.querySelectorAll('.device-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const dev = S.devices.find(d => d.serial === card.dataset.serial);
+      if (dev) selectDevice(dev);
+    });
+  });
+}
+
+async function selectDevice(dev) {
+  S.selectedDevice = dev;
+  await loadPackages();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 2 — Packages
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadPackages() {
+  goToStep(2);
+  const el = document.getElementById('pkg-list');
+  document.getElementById('pkg-sub').textContent = S.selectedDevice?.label ?? '';
+  document.getElementById('pkg-filter').value = '';
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>Loading packages…</div>';
+  try {
+    const serial = encodeURIComponent(S.selectedDevice.serial);
+    const r = await fetch(`/api/packages?serial=${serial}`);
+    if (!r.ok) throw new Error(await r.text());
+    S.packages = await r.json();
+    S.filtered = S.packages;
+    renderPackages(S.filtered);
+  } catch (e) {
+    el.innerHTML = '';
+    showError('Failed to load packages: ' + e.message);
+  }
+}
+
+function filterPackages(q) {
+  const needle = q.toLowerCase();
+  S.filtered = needle ? S.packages.filter(p => p.toLowerCase().includes(needle)) : S.packages;
+  renderPackages(S.filtered);
+}
+
+function renderPackages(pkgs) {
+  const el = document.getElementById('pkg-list');
+  if (!pkgs.length) {
+    el.innerHTML = '<div class="loading" style="padding:20px">No packages match the filter.</div>';
+    return;
+  }
+  el.innerHTML =
+    pkgs.map(p => `<div class="pkg-item" data-pkg="${esc(p)}">${esc(p)}</div>`).join('') +
+    `<div class="pkg-item pkg-footer">${pkgs.length.toLocaleString()} packages</div>`;
+  el.querySelectorAll('.pkg-item[data-pkg]').forEach(item => {
+    item.addEventListener('click', () => selectPackage(item.dataset.pkg));
+  });
+}
+
+function selectPackage(pkg) {
+  S.selectedPkg = pkg;
+  document.getElementById('cfg-device').textContent = S.selectedDevice?.label ?? '';
+  document.getElementById('cfg-pkg').textContent = pkg;
+  S.launchApp = true;
+  document.getElementById('toggle-launch').classList.add('on');
+  goToStep(3);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 3 — Configure
+// ─────────────────────────────────────────────────────────────────────────────
+function toggleLaunch() {
+  S.launchApp = !S.launchApp;
+  document.getElementById('toggle-launch').classList.toggle('on', S.launchApp);
+}
+
+function startRecording() {
+  const interval = Math.max(0.1, parseFloat(document.getElementById('cfg-interval').value) || 1.0);
+  const durStr   = document.getElementById('cfg-duration').value.trim();
+  const duration = durStr ? parseFloat(durStr) : null;
+
+  S.sampleCount = 0;
+  S.startedAt   = Date.now();
+  S.buf         = { labels:[], cpu:[], ram:[], fps:[], rx:[], tx:[] };
+
+  goToStep(4);
+  document.getElementById('rec-name').textContent    = 'Recording';
+  document.getElementById('rec-meta').textContent    = `${S.selectedPkg} · ${S.selectedDevice?.label}`;
+  document.getElementById('rec-samples').textContent = '0';
+  document.getElementById('rec-elapsed').textContent = '0:00';
+  document.getElementById('rec-activity').textContent = '—';
+  document.getElementById('rec-pulse').style.cssText = '';
+  document.getElementById('btn-stop').disabled = false;
+
+  resetStatCards();
+  startTimer();
+  // Defer chart + WS init until after the browser has laid out the newly visible panel.
+  requestAnimationFrame(() => {
+    initCharts();
+    openWS({ interval, duration });
+  });
+}
+
+function resetStatCards() {
+  ['sc-batt','sc-therm','sc-jank','sc-p95'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+  ['sc-batt-sub','sc-therm-sub','sc-jank-sub'].forEach(id => {
+    document.getElementById(id).textContent = '';
+  });
+  ['cur-cpu','cur-ram','cur-fps','cur-net'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+}
+
+function stopRecording() {
+  if (S.ws && S.ws.readyState === WebSocket.OPEN) {
+    S.ws.send(JSON.stringify({ type: 'stop' }));
+  }
+  document.getElementById('btn-stop').disabled = true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WebSocket
+// ─────────────────────────────────────────────────────────────────────────────
+function openWS({ interval, duration }) {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  S.ws = new WebSocket(`${proto}://${location.host}/ws/record`);
+
+  S.ws.onopen = () => {
+    S.ws.send(JSON.stringify({
+      serial:    S.selectedDevice?.serial,
+      package:   S.selectedPkg,
+      interval,
+      duration,
+      no_launch: !S.launchApp,
+    }));
+  };
+
+  S.ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === 'ping') return;
+    if (msg.type === 'error') {
+      showError(msg.message);
+      stopTimer();
+      return;
+    }
+    if (msg.type === 'sample') { onSample(msg.data); return; }
+    if (msg.type === 'done')   { onDone(msg.run_id); return; }
+  };
+
+  S.ws.onerror = () => showError('WebSocket connection error — check the server log.');
+
+  S.ws.onclose = () => {
+    stopTimer();
+    const p = document.getElementById('rec-pulse');
+    p.style.animation = 'none';
+    p.style.background = 'var(--muted)';
+  };
+}
+
+function onSample(s) {
+  S.sampleCount++;
+  document.getElementById('rec-samples').textContent = S.sampleCount;
+
+  const t = s.t != null ? fmtTime(s.t) : String(S.sampleCount);
+  const b = S.buf;
+  b.labels.push(t);
+  b.cpu.push(s.cpu_pct   ?? null);
+  b.ram.push(s.pss_kb    != null ? +(s.pss_kb / 1024).toFixed(1) : null);
+  b.fps.push(s.fps       ?? null);
+  b.rx.push( s.rx_b      != null ? +(s.rx_b   / 1024).toFixed(2) : null);
+  b.tx.push( s.tx_b      != null ? +(s.tx_b   / 1024).toFixed(2) : null);
+
+  if (b.labels.length > S.MAX) {
+    b.labels.shift(); b.cpu.shift(); b.ram.shift();
+    b.fps.shift();    b.rx.shift();  b.tx.shift();
+  }
+
+  refreshChart('cpu', b.labels, [b.cpu]);
+  refreshChart('ram', b.labels, [b.ram]);
+  refreshChart('fps', b.labels, [b.fps]);
+  refreshChart('net', b.labels, [b.rx, b.tx]);
+
+  if (s.cpu_pct != null)
+    document.getElementById('cur-cpu').textContent = s.cpu_pct.toFixed(1) + '%';
+  if (s.pss_kb != null)
+    document.getElementById('cur-ram').textContent = (s.pss_kb / 1024).toFixed(0) + ' MB';
+  if (s.fps != null)
+    document.getElementById('cur-fps').textContent = s.fps.toFixed(1);
+  if (s.rx_b != null)
+    document.getElementById('cur-net').textContent =
+      `↓${(s.rx_b/1024).toFixed(1)} ↑${(s.tx_b/1024).toFixed(1)} KB/s`;
+
+  if (s.battery_level_pct != null) {
+    document.getElementById('sc-batt').textContent = s.battery_level_pct.toFixed(0) + '%';
+    document.getElementById('sc-batt-sub').textContent =
+      s.battery_temp_c != null ? s.battery_temp_c.toFixed(1) + '°C' : '';
+  }
+  if (s.thermal_status != null) {
+    const name = THERMAL_NAMES[Math.round(s.thermal_status)] ?? String(s.thermal_status);
+    document.getElementById('sc-therm').textContent = name;
+    document.getElementById('sc-therm-sub').textContent =
+      s.thermal_skin_c != null ? `skin ${s.thermal_skin_c.toFixed(1)}°C`
+      : s.thermal_battery_c != null ? `batt ${s.thermal_battery_c.toFixed(1)}°C` : '';
+  }
+  if (s.jank_pct != null) {
+    document.getElementById('sc-jank').textContent = s.jank_pct.toFixed(1) + '%';
+    document.getElementById('sc-jank-sub').textContent =
+      s.frames_total ? s.frames_total + ' frames' : '';
+  }
+  if (s.p95_ms != null)
+    document.getElementById('sc-p95').textContent = s.p95_ms.toFixed(0);
+
+  if (s.activity) {
+    const short = s.activity.split('/').pop()?.split('.').pop()?.replace(/Activity$/,'') || s.activity;
+    const el = document.getElementById('rec-activity');
+    el.textContent = short;
+    el.title = s.activity;
+  }
+}
+
+function onDone(runId) {
+  stopTimer();
+  document.getElementById('done-sub').textContent =
+    `${S.sampleCount} samples · ${S.selectedPkg}`;
+  document.getElementById('btn-report').href = `/api/runs/${runId}/report`;
+  goToStep(5);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Elapsed timer
+// ─────────────────────────────────────────────────────────────────────────────
+function startTimer() {
+  stopTimer();
+  S.elapsedTimer = setInterval(() => {
+    const s = Math.floor((Date.now() - S.startedAt) / 1000);
+    document.getElementById('rec-elapsed').textContent = fmtTime(s);
+  }, 1000);
+}
+function stopTimer() {
+  if (S.elapsedTimer) { clearInterval(S.elapsedTimer); S.elapsedTimer = null; }
+}
+function fmtTime(s) {
+  return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Charts
+// ─────────────────────────────────────────────────────────────────────────────
+function makeChartOptions() {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: {
+      legend:  { display: false },
+      tooltip: { enabled: false },
+    },
+    scales: {
+      x: { display: false },
+      y: {
+        display: true,
+        grid:   { color: 'rgba(255,255,255,0.05)' },
+        border: { display: false },
+        ticks:  { color: '#7d8590', font: { size: 10 }, maxTicksLimit: 4 },
+      },
+    },
+    elements: {
+      point: { radius: 0 },
+      line:  { tension: 0.35, borderWidth: 2 },
+    },
+  };
+}
+
+function makeChart(id, colors) {
+  const ctx = document.getElementById('chart-' + id).getContext('2d');
+  const datasets = colors.map(c => ({
+    data: [],
+    borderColor: c,
+    backgroundColor: c + '28',
+    fill: true,
+  }));
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets },
+    options: makeChartOptions(),
+  });
+  S.charts[id] = chart;
+  return chart;
+}
+
+function initCharts() {
+  Object.values(S.charts).forEach(c => c.destroy());
+  S.charts = {};
+  makeChart('cpu', ['#f97316']);
+  makeChart('ram', ['#3b82f6']);
+  makeChart('fps', ['#10b981']);
+  makeChart('net', ['#8b5cf6', '#ec4899']);
+}
+
+function refreshChart(id, labels, dataSets) {
+  const chart = S.charts[id];
+  if (!chart) return;
+  chart.data.labels = labels;
+  dataSets.forEach((d, i) => { chart.data.datasets[i].data = d; });
+  chart.update('none');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Past runs
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadRuns() {
+  const el = document.getElementById('runs-container');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>Loading runs…</div>';
+  try {
+    const r = await fetch('/api/runs');
+    const runs = await r.json();
+    if (!runs.length) {
+      el.innerHTML = `<div class="empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">No runs yet</div>
+        <div class="empty-sub">Record a session and it will appear here.</div>
+      </div>`;
+      return;
+    }
+    el.innerHTML = `<div class="runs-table">
+      <div class="runs-thead">
+        <div>Package</div><div>Recorded</div><div>Samples</div><div></div>
+      </div>
+      ${runs.map(r => `<div class="run-row">
+        <div class="run-pkg" title="${esc(r.package)}">${esc(r.package)}</div>
+        <div class="run-time">${fmtDate(r.started_at)}</div>
+        <div class="run-n">${r.sample_count}</div>
+        <div>${r.has_report
+          ? `<a class="btn btn-sm" href="/api/runs/${esc(r.id)}/report" target="_blank">Open Report</a>`
+          : '<span style="color:var(--muted);font-size:12px">No report</span>'
+        }</div>
+      </div>`).join('')}
+    </div>`;
+  } catch (e) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-title">Failed to load runs</div>
+      <div class="empty-sub">${esc(e.message)}</div>
+    </div>`;
+  }
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString(undefined, {
+      month:'short', day:'numeric', hour:'2-digit', minute:'2-digit',
+    });
+  } catch { return iso; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Boot
+// ─────────────────────────────────────────────────────────────────────────────
+loadDevices();
+</script>
+</body>
+</html>

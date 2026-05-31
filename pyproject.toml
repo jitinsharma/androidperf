@@ -45,6 +45,10 @@ dev = [
     "pytest>=8.0.0",
     "ruff>=0.5.0",
 ]
+ui = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.29",
+]
 
 [project.scripts]
 androidperf = "androidperf.cli:app"
