@@ -1,0 +1,15 @@
+Name:	com.example.app
+Umask:	0077
+State:	S (sleeping)
+Tgid:	12345
+Ngid:	0
+Pid:	12345
+PPid:	1234
+TracerPid:	0
+Uid:	10200	10200	10200	10200
+Gid:	10200	10200	10200	10200
+FDSize:	256
+Groups:	3003 9997 20200 50200
+Threads:	42
+voluntary_ctxt_switches:	15234
+nonvoluntary_ctxt_switches:	3421

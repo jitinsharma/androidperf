@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import json
 from pathlib import Path
 
@@ -114,6 +115,22 @@ async def api_run_samples(run_id: str, runs_dir: str = "./runs") -> dict:
     if not path.exists():
         raise HTTPException(status_code=404, detail="samples.json not found")
     return json.loads(path.read_text())
+
+
+@app.get("/api/runs/{run_id}/insights")
+async def api_run_insights(run_id: str, runs_dir: str = "./runs") -> list[dict]:
+    path = Path(runs_dir) / run_id / "samples.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="samples.json not found")
+    from ..insights import analyze
+    payload = json.loads(path.read_text())
+    findings = analyze(
+        samples=payload.get("samples", []),
+        events=payload.get("events", []),
+        meta=payload.get("meta", {}),
+        gc_events=payload.get("gc_events", []),
+    )
+    return [dataclasses.asdict(f) for f in findings]
 
 
 # ---------------------------------------------------------------------------

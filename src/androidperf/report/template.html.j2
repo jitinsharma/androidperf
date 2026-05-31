@@ -98,6 +98,49 @@
             text-transform: uppercase;
             letter-spacing: 0.8px;
         }
+        .insights { margin-bottom: 28px; }
+        .insights h2 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #a3adc2;
+            margin: 0 0 12px 0;
+        }
+        .finding-card {
+            background: #141823;
+            border: 1px solid #1d2230;
+            border-left-width: 4px;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+        .finding-card.critical { border-left-color: #ef4444; }
+        .finding-card.warning  { border-left-color: #f59e0b; }
+        .finding-card.info     { border-left-color: #60a5fa; }
+        .finding-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .finding-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+        .badge-critical { background: #7f1d1d; color: #fca5a5; }
+        .badge-warning  { background: #78350f; color: #fcd34d; }
+        .badge-info     { background: #1e3a5f; color: #93c5fd; }
+        .badge-cat      { background: #1d2230; color: #8a94a6; }
+        .finding-title  { font-size: 14px; font-weight: 600; color: #e6e9ef; }
+        .finding-desc   { font-size: 13px; color: #a3adc2; margin-bottom: 6px; }
+        .finding-rec    { font-size: 12px; color: #6b7689; }
+        .finding-rec strong { color: #8a94a6; }
+        .finding-meta   { font-size: 11px; color: #4b5568; margin-top: 6px; }
         footer {
             margin-top: 32px;
             padding-top: 16px;
@@ -132,6 +175,30 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if findings %}
+    <section class="insights">
+        <h2>Insights ({{ findings | length }})</h2>
+        {% for f in findings %}
+        <div class="finding-card {{ f.severity }}">
+            <div class="finding-header">
+                <span class="finding-badge badge-{{ f.severity }}">{{ f.severity }}</span>
+                <span class="finding-badge badge-cat">{{ f.category }}</span>
+                <span class="finding-title">{{ f.title }}</span>
+            </div>
+            <div class="finding-desc">{{ f.description }}</div>
+            <div class="finding-rec"><strong>Fix:</strong> {{ f.recommendation }}</div>
+            {% if f.timestamps %}
+            <div class="finding-meta">
+                First at {{ f.timestamps[0] }}s
+                · {{ f.timestamps | length }} occurrence(s)
+                {% if f.peak_value is not none %} · peak {{ f.peak_value }}{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
 
     {% for chart in charts %}
     <section class="chart">

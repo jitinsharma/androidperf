@@ -15,7 +15,8 @@ from typing import Any
 from adbutils import AdbDevice
 from rich.console import Console
 
-from .collectors import activity, battery, cpu, fps, fragments, memory, network, thermal
+from .collectors import activity, battery, cpu, fps, fragments, memory, network, procfs, thermal
+from .collectors.logcat import LogcatCollector
 from .device import DeviceError, DeviceInfo, get_pid, get_uid, launch_app
 from .report.generate import generate_report
 from .ui.live import LiveDashboard
@@ -72,6 +73,8 @@ def run_session(
     fps.reset(device, package)
 
     stop = stop_event if stop_event is not None else threading.Event()
+    started_mono = time.monotonic()
+    logcat = LogcatCollector(serial=device_info.serial, started_mono=started_mono)
 
     def _on_sigint(signum: int, frame: object) -> None:  # noqa: ARG001
         stop.set()
@@ -82,23 +85,25 @@ def run_session(
         signal.signal(signal.SIGINT, _on_sigint)
 
     started_at = _utcnow_iso()
-    started_mono = time.monotonic()
 
     samples: list[dict[str, Any]] = []
     events: list[dict[str, Any]] = []
     prev_rx = prev_tx = 0.0
     have_prev_net = False
+    prev_csw_vol = prev_csw_nonvol = prev_disk_read = prev_disk_write = 0.0
+    have_prev_procfs = False
     last_activity: str | None = None
     last_fragment: str | None = None
 
     run_dir = _timestamped_dir(output_dir, package)
+    logcat.start()
 
     # Collectors are all IO-bound on `adb shell`. Running them on a thread
     # pool makes the per-tick cost ~max(individual) instead of sum(individual);
     # on a busy app this is the difference between 1 s and 4 s per tick.
     try:
         with (
-            ThreadPoolExecutor(max_workers=8, thread_name_prefix="collector") as pool,
+            ThreadPoolExecutor(max_workers=10, thread_name_prefix="collector") as pool,
             LiveDashboard(package=package, device_label=device_info.label) as ui,
         ):
             tick_index = 0
@@ -125,6 +130,9 @@ def run_session(
                 # last-known activity to keep this query parallel; on the very
                 # first tick we have nothing, so it returns None.
                 fut_frag = pool.submit(fragments.current_fragment, device, last_activity)
+                fut_procfs = pool.submit(procfs.sample, device, pid=pid)
+                fut_obj = pool.submit(memory.sample_objects, device, package=package)
+                fut_tnames = pool.submit(procfs.sample_thread_names, device, pid=pid)
 
                 # Each collector is wrapped so one failing metric doesn't abort the session.
                 try:
@@ -193,6 +201,35 @@ def run_session(
                 except Exception as exc:  # noqa: BLE001
                     sample["_fragment_error"] = repr(exc)
 
+                # procfs: threads, context switches, disk I/O (delta)
+                try:
+                    pfs = fut_procfs.result()
+                    if pfs.get("threads") is not None:
+                        sample["threads"] = pfs["threads"]
+                    if have_prev_procfs:
+                        sample["csw_vol"] = max(0, pfs.get("csw_vol_total", 0) - prev_csw_vol)
+                        sample["csw_nonvol"] = max(0, pfs.get("csw_nonvol_total", 0) - prev_csw_nonvol)
+                        sample["disk_read_b"] = max(0, pfs.get("disk_read_total_b", 0) - prev_disk_read)
+                        sample["disk_write_b"] = max(0, pfs.get("disk_write_total_b", 0) - prev_disk_write)
+                    else:
+                        have_prev_procfs = True
+                    prev_csw_vol = pfs.get("csw_vol_total", prev_csw_vol)
+                    prev_csw_nonvol = pfs.get("csw_nonvol_total", prev_csw_nonvol)
+                    prev_disk_read = pfs.get("disk_read_total_b", prev_disk_read)
+                    prev_disk_write = pfs.get("disk_write_total_b", prev_disk_write)
+                except Exception as exc:  # noqa: BLE001
+                    sample["_procfs_error"] = repr(exc)
+
+                try:
+                    sample.update(fut_obj.result())
+                except Exception as exc:  # noqa: BLE001
+                    sample["_obj_error"] = repr(exc)
+
+                try:
+                    sample["thread_names"] = fut_tnames.result()
+                except Exception as exc:  # noqa: BLE001
+                    sample["_tnames_error"] = repr(exc)
+
                 samples.append(sample)
                 if on_sample is not None:
                     on_sample(sample)
@@ -209,6 +246,9 @@ def run_session(
     finally:
         if _is_main_thread:
             signal.signal(signal.SIGINT, previous_sigint)
+        logcat.stop()
+
+    gc_events = logcat.gc_events()
 
     # Persist first — anything below (summary panel, HTML render) is best-effort
     # post-processing. A failure there must not lose samples that were captured.
@@ -229,9 +269,11 @@ def run_session(
             "interval_s": interval,
             "sample_count": len(samples),
             "event_count": len(events),
+            "gc_event_count": len(gc_events),
         },
         "samples": samples,
         "events": events,
+        "gc_events": gc_events,
     }
 
     json_path = run_dir / "samples.json"

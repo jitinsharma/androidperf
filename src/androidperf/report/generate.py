@@ -15,7 +15,10 @@ import pandas as pd
 import plotly.graph_objects as go
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+import dataclasses
+
 from ..collectors.activity import class_short_name
+from ..insights import analyze as analyze_insights
 from ..summary import build_cards
 
 # Curated dark-theme-friendly palette. Names get assigned colors by stable
@@ -291,6 +294,12 @@ def generate_report(samples_json: Path, output_html: Path) -> Path:
     payload = json.loads(Path(samples_json).read_text())
     samples = payload.get("samples", [])
     events = payload.get("events", [])
+    gc_events = payload.get("gc_events", [])
+    meta = payload.get("meta", {})
+
+    findings = analyze_insights(samples=samples, events=events, meta=meta, gc_events=gc_events)
+    findings_dicts = [dataclasses.asdict(f) for f in findings]
+
     df = pd.DataFrame(samples)
     if "t" not in df.columns:
         df["t"] = pd.Series(dtype=float)
@@ -336,10 +345,11 @@ def generate_report(samples_json: Path, output_html: Path) -> Path:
     )
     template = env.get_template(_TEMPLATE_NAME)
     out = template.render(
-        meta=payload.get("meta", {}),
+        meta=meta,
         charts=rendered_charts,
         summary_cards=build_cards(df),
         events=events,
+        findings=findings_dicts,
     )
 
     output_html = Path(output_html)

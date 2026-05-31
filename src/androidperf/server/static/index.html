@@ -283,11 +283,31 @@
     /* ── Done panel ─────────────────────────────────── */
     .done-card {
       background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: var(--r-lg); padding: 48px 40px; text-align: center;
+      border-radius: var(--r-lg); padding: 40px 40px; text-align: center;
     }
     .done-icon  { font-size: 44px; margin-bottom: 14px; }
     .done-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
-    .done-sub   { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+    .done-sub   { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    .done-insights { margin-bottom: 20px; text-align: left; }
+    .done-finding {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 12px; border-radius: 6px;
+      border: 1px solid var(--border); border-left-width: 3px;
+      margin-bottom: 8px; background: var(--bg);
+    }
+    .done-finding.critical { border-left-color: #ef4444; }
+    .done-finding.warning  { border-left-color: #f59e0b; }
+    .done-finding.info     { border-left-color: #60a5fa; }
+    .df-badge {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    }
+    .df-badge.critical { background: #7f1d1d; color: #fca5a5; }
+    .df-badge.warning  { background: #78350f; color: #fcd34d; }
+    .df-badge.info     { background: #1e3a5f; color: #93c5fd; }
+    .df-body { flex: 1; min-width: 0; }
+    .df-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .df-desc  { font-size: 12px; color: var(--muted); line-height: 1.4; }
     .done-acts  { display: flex; gap: 10px; justify-content: center; }
 
     /* ── Past runs ──────────────────────────────────── */
@@ -518,6 +538,7 @@
         <div class="done-icon">✓</div>
         <div class="done-title">Recording complete</div>
         <div class="done-sub" id="done-sub"></div>
+        <div class="done-insights" id="done-insights"></div>
         <div class="done-acts">
           <a class="btn btn-primary" id="btn-report" href="#" target="_blank">Open Report</a>
           <button class="btn" onclick="goToStep(1)">Record Again</button>
@@ -856,7 +877,28 @@ function onDone(runId) {
   document.getElementById('done-sub').textContent =
     `${S.sampleCount} samples · ${S.selectedPkg}`;
   document.getElementById('btn-report').href = `/api/runs/${runId}/report`;
+  document.getElementById('done-insights').innerHTML = '';
   goToStep(5);
+  // Best-effort insights fetch — silent on failure
+  fetch(`/api/runs/${encodeURIComponent(runId)}/insights`)
+    .then(r => r.ok ? r.json() : [])
+    .then(findings => renderDoneInsights(findings))
+    .catch(() => {});
+}
+
+function renderDoneInsights(findings) {
+  const container = document.getElementById('done-insights');
+  if (!findings || findings.length === 0) return;
+  const top = findings.slice(0, 3);
+  const html = top.map(f => `
+    <div class="done-finding ${esc(f.severity)}">
+      <span class="df-badge ${esc(f.severity)}">${esc(f.severity)}</span>
+      <div class="df-body">
+        <div class="df-title">${esc(f.title)}</div>
+        <div class="df-desc">${esc(f.description)}</div>
+      </div>
+    </div>`).join('');
+  container.innerHTML = html;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

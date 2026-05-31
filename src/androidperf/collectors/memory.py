@@ -61,3 +61,28 @@ def sample(device: AdbDevice, *, package: str, **_: object) -> dict[str, float]:
     # parse below is still present.
     out = device.shell(f"dumpsys meminfo -s {package}")
     return parse_meminfo(out)
+
+
+# Objects block has labels both at line-start and mid-line, e.g.:
+#   AppContexts:   4           Activities:   3
+_OBJ_RE = re.compile(r"\b(Activities|Views|AppContexts):\s+(\d+)")
+
+
+def parse_meminfo_objects(output: str) -> dict[str, float]:
+    """Extract object counts from the Objects section of dumpsys meminfo."""
+    result: dict[str, float] = {}
+    for m in _OBJ_RE.finditer(output):
+        label, val = m.group(1), m.group(2)
+        if label == "Activities":
+            result["obj_activities"] = float(val)
+        elif label == "Views":
+            result["obj_views"] = float(val)
+        elif label == "AppContexts":
+            result["obj_app_contexts"] = float(val)
+    return result
+
+
+def sample_objects(device: AdbDevice, *, package: str, **_: object) -> dict[str, float]:
+    # No -s flag so the Objects block is present; grep keeps it fast.
+    out = device.shell(f"dumpsys meminfo {package} | grep -A10 '^ Objects'")
+    return parse_meminfo_objects(out)
